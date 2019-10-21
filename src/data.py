@@ -40,7 +40,7 @@ class DataSets(object):
 
         data_standard = self.standard_scaler.fit_transform(data_diff)
         data_scaled = self.min_max_scaler.fit_transform(data_standard)
-        return data_scaled
+        return data_ranged, data_scaled
 
     def invert_transform(self, data, history='test'):
         x = data
@@ -59,7 +59,10 @@ class DataSets(object):
         if test_size == 0:
             return x, y
         else:
-            return train_test_split(x, y, shuffle=False, test_size=test_size)
+            x_train, x_test, y_train, y_test = train_test_split(x, y, shuffle=False, test_size=test_size)
+            self.history_train = self.history[:-len(x_test) - 1]
+            self.history_test = self.history[-len(x_test) - 1:-1]
+            return x_train, x_test, y_train, y_test
 
     def _reduce_range(self, data):
         """
