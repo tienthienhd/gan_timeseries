@@ -70,10 +70,10 @@ class RnnNet(Net):
 class FlnnNet(Net):
 
     def __init__(self, params, scope):
-        super().__init__(params, scope)
         self.activation = params['activation']
         self._get_function(params['list_function'])
         self.n_output = params['num_output']
+        super().__init__(params, scope)
 
     def _get_function(self, list_functions):
         functions = {
@@ -87,10 +87,11 @@ class FlnnNet(Net):
             self.functions.append(f)
 
     def __call__(self, x, reuse=False, *args, **kwargs):
-        net = [x]
-        for f in self.functions:
-            net.append(f(x))
-        net = tf.concat(net, axis=1)
-        net = tf.keras.layers.Flatten()(net)
-        net = tf.keras.layers.Dense(self.n_output, activation=self.activation)(net)
+        with tf.variable_scope(self.scope):
+            net = [x]
+            for f in self.functions:
+                net.append(f(x))
+            net = tf.concat(net, axis=1)
+            net = tf.keras.layers.Flatten()(net)
+            net = tf.keras.layers.Dense(self.n_output, activation=self.activation)(net)
         return net

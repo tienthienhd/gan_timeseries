@@ -84,7 +84,7 @@ class RegressionModel(Model):
         self._x = tf.placeholder(tf.float32, [None] + self.input_shape, 'x')
 
         self._pred = self.net(self._x)
-        self._pred = tf.reshape(self._pred, (-1, 1, self._pred.shape[-1]))
+        # self._pred = tf.reshape(self._pred, (-1, 1, self._pred.shape[-1]))
         self._y = tf.placeholder(tf.float32, self._pred.shape, 'y')
 
         self._loss = tf.losses.mean_squared_error(self._y, self._pred)
@@ -116,12 +116,14 @@ class GanModel(Model):
         self._x = tf.placeholder(tf.float32, [None] + self.input_shape, 'x')
         self._z = tf.placeholder(tf.float32, [None] + self.noise_shape, 'noise')
 
-        self._pred = self.generator(self._x, self._z)
+        self._pred = self.generator(x=self._x, z=self._z)
 
         self._y = tf.placeholder(tf.float32, self._pred.shape, 'y')
 
-        x_fake = tf.concat([self._x, self._pred], axis=1, name='x_fake')
-        x_real = tf.concat([self._x, self._y], axis=1, name='x_real')
+        _pred = tf.reshape(self._pred, (-1, 1, self._pred.shape[-1]))
+        _y = tf.reshape(self._y, (-1, 1, self._y.shape[-1]))
+        x_fake = tf.concat([self._x, _pred], axis=1, name='x_fake')
+        x_real = tf.concat([self._x, _y], axis=1, name='x_real')
 
         d_fake = self.discriminator(x_fake, reuse=False)
         d_real = self.discriminator(x_real, reuse=True)

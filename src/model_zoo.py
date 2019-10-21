@@ -52,7 +52,7 @@ class AnnGan(GanModel):
                          model_dir, is_wgan)
 
 
-class FlnnFlnnGan(GanModel):
+class FlnnGan(GanModel):
     def __init__(self,
                  params_generator,
                  params_discriminator,

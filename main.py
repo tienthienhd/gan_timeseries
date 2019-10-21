@@ -83,10 +83,45 @@ if __name__ == '__main__':
         "train": {
             "validation_split": 0.2,
             "batch_size": 8,
-            "epochs": 10,
+            "epochs": 1000,
+            "verbose": 1,
+            "step_print": 10
+        }
+    }
+
+    config_ann_gan = {
+        "model": {
+            "params_generator": {
+                "layer_size": [32, dataset.get_input_shape()[-1]],
+                "activation": 'sigmoid',
+                "dropout": 0,
+                "output_activation": None
+
+            },
+            "params_discriminator": {
+                "layer_size": [32, dataset.get_input_shape()[-1]],
+                "activation": 'sigmoid',
+                "dropout": 0,
+                "output_activation": 'sigmoid'
+
+            },
+            "input_shape": dataset.get_input_shape(),
+            "noise_shape": dataset.get_input_shape(),
+            "optimizer_g": 'rmsprop',
+            "optimizer_d": 'rmsprop',
+            "learning_rate_g": 0.001,
+            "learning_rate_d": 0.001,
+            "num_train_d": 1,
+            "is_wgan": False,
+            "model_dir": "logs/ann_gan"
+        },
+        "train": {
+            "validation_split": 0.2,
+            "batch_size": 8,
+            "epochs": 3,
             "verbose": 1,
             "step_print": 1
         }
     }
 
-    run('FlnnFlnnGan', config=config_flnn_gan, dataset=dataset)
+    run('AnnGan', config=config_ann_gan, dataset=dataset)
