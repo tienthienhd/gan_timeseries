@@ -37,7 +37,7 @@ def run(model, config, dataset: DataSets):
     b = np.concatenate([y_test_invert, pred_invert], axis=1)
     df_2 = pd.DataFrame(b, columns=columns)
     utils.plot_distribution([df_2[col].values for col in columns], legends=columns)
-    utils.plot_time_series(df_2, title=f"{result_eval}")
+    utils.plot_time_series(df_2, title=f"{result_eval.values()}")
     utils.plt.show()
 
 
@@ -47,7 +47,9 @@ if __name__ == '__main__':
                        column_names=['cpu'],
                        header=None,
                        n_in=1,
-                       n_out=1)
+                       n_out=1,
+                       is_diff=True,
+                       feature_range=(-1, 1))
 
     config_ann = {
         "model": {
@@ -65,7 +67,7 @@ if __name__ == '__main__':
         },
         "train": {
             "validation_split": 0.2,
-            "batch_size": 4,
+            "batch_size": 8,
             "epochs": 100,
             "verbose": 1,
             "step_print": 1
@@ -76,7 +78,7 @@ if __name__ == '__main__':
         "model": {
             "params": {
                 "list_function": ['sin', 'cos', 'tan'],
-                "activation": 'sigmoid',
+                "activation": 'tanh',
                 "num_output": 1
 
             },
@@ -87,8 +89,8 @@ if __name__ == '__main__':
         },
         "train": {
             "validation_split": 0.2,
-            "batch_size": 4,
-            "epochs": 100,
+            "batch_size": 8,
+            "epochs": 10,
             "verbose": 1,
             "step_print": 1
         }

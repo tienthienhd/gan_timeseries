@@ -14,11 +14,20 @@ class DataSets(object):
                  header=None,
                  n_in=1,
                  n_out=1,
+                 is_log=True,
+                 is_diff=True,
+                 is_stand=True,
+                 is_scale=True,
+                 feature_range=(0,1),
                  debug=False,
                  show_plot=False, **kwargs):
+        self.is_log = is_log
+        self.is_diff = is_diff
+        self.is_stand = is_stand
+        self.is_scale = is_scale
         self._data_raw = pd.read_csv(data_path, usecols=usecols, names=column_names, header=header)
 
-        self.min_max_scaler = MinMaxScaler(feature_range=(0, 1))
+        self.min_max_scaler = MinMaxScaler(feature_range=feature_range)
         self.standard_scaler = StandardScaler()
 
         history, data = self.transform(self._data_raw)
@@ -33,21 +42,36 @@ class DataSets(object):
         self.history_test = None
 
     def transform(self, data):
-        # reduce range of data
-        data_ranged = self._reduce_range(data)
-        # difference of data
-        data_diff = self._difference(data_ranged, interval=1)
+        x = data
+        history = data
+        if self.is_log:
+            # reduce range of data
+            data_ranged = self._reduce_range(x)
+            x = data_ranged
+            history = data_ranged
+        if self.is_diff:
+            # difference of data
+            data_diff = self._difference(x, interval=1)
+            x = data_diff
 
-        data_standard = self.standard_scaler.fit_transform(data_diff)
-        data_scaled = self.min_max_scaler.fit_transform(data_standard)
-        return data_ranged, data_scaled
+        if self.is_stand:
+            data_standard = self.standard_scaler.fit_transform(x)
+            x = data_standard
+        if self.is_scale:
+            data_scaled = self.min_max_scaler.fit_transform(x)
+            x = data_scaled
+        return history, x
 
     def invert_transform(self, data, history='test'):
         x = data
-        x = self.min_max_scaler.inverse_transform(x)
-        x = self.standard_scaler.inverse_transform(x)
-        x = self._invert_difference(history, x, interval=1)
-        x = self._invert_range(x)
+        if self.is_scale:
+            x = self.min_max_scaler.inverse_transform(x)
+        if self.is_stand:
+            x = self.standard_scaler.inverse_transform(x)
+        if self.is_diff:
+            x = self._invert_difference(history, x, interval=1)
+        if self.is_log:
+            x = self._invert_range(x)
         return x
 
     def get_input_shape(self):
