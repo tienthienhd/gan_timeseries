@@ -1,3 +1,4 @@
+GPyOpt
 matplotlib
 seaborn
 pandas

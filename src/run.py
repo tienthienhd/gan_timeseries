@@ -15,13 +15,49 @@ def run(model, config_init, config_train, dataset: DataSets):
     model = getattr(model_zoo, model)(**config_init)
     model.fit(x_train, y_train, **config_train)
 
+    pred = model.predict(x_test)
+    pred = np.reshape(pred, (-1, y_test.shape[-1]))
+
+    y_test = np.reshape(y_test, (-1, y_test.shape[-1]))
+
+    pred_invert = dataset.invert_transform(pred)
+    y_test_invert = dataset.invert_transform(y_test)
+
+    output = np.concatenate([pred, y_test, pred_invert, y_test_invert], axis=1)
+    df = pd.DataFrame(output, columns=['predict', 'actual', 'predict_invert', 'actual_invert'])
+
+    filename = "/home/tienthien/Desktop/Mine/gan_timeseries/logs/tuning/gru_gan/"
+    for k, v in config_init.items():
+        if k == 'model_dir':
+            continue
+        if not isinstance(v, dict):
+            filename += "{}_".format(v)
+        else:
+            for k1, v1 in v.items():
+                filename += "{}_".format(v1)
+    filename += ".csv"
+    df.to_csv(filename, index=False)
+
+    result_metrics = evaluate(y_test_invert, pred_invert,
+                              metrics=('mae', 'rmse'))
+
+    return result_metrics['mae']
+
+
+def run_test(model, config_init, config_train, dataset: DataSets):
+    x_train, x_test, y_train, y_test = dataset.get_data()
+    y_train = y_train.reshape((-1, y_train.shape[-1]))
+
+    model = getattr(model_zoo, model)(**config_init)
+    model.fit(x_train, y_train, **config_train)
+
     preds = []
     for i in range(50):
         pred = model.predict(x_test)
         # print(pred.shape)
         pred = np.reshape(pred, (-1, y_test.shape[-1]))
         pred = dataset.invert_transform(pred)
-        preds.append(pred.values)
+        preds.append(pred)
     model.close_session()
 
     y_test = np.reshape(y_test, (-1, y_test.shape[-1]))
@@ -44,9 +80,23 @@ def run(model, config_init, config_train, dataset: DataSets):
 def plot(actual, predicts, predict_mean):
     plt.figure()
     pred_concat = np.concatenate(predicts, axis=1)
+
     pred_min = np.amin(pred_concat, axis=1)
     pred_max = np.amax(pred_concat, axis=1)
-    plt.fill_between(range(len(pred_concat)), pred_min, pred_max, alpha=0.6)
+
+    pred_mean = np.mean(pred_concat, axis=1)
+    pred_std = np.std(pred_concat, axis=1)
+    pred_mean = pred_mean.reshape(len(pred_mean))
+
+    pred_upper_95 = pred_mean + 1.96 * pred_std
+    pred_lower_95 = pred_mean - 1.96 * pred_std
+
+    pred_upper_80 = pred_mean + 1.28 * pred_std
+    pred_lower_80 = pred_mean - 1.28 * pred_std
+
+    plt.fill_between(range(len(pred_concat)), pred_min, pred_max, alpha=0.6, label='min-max-range')
+    plt.fill_between(range(len(pred_concat)), pred_lower_95, pred_upper_95, alpha=0.4, label='interval 95%')
+    plt.fill_between(range(len(pred_concat)), pred_lower_80, pred_upper_80, alpha=0.4, label='interval 80%')
     # for p in predicts:
     #     plt.plot(p, color='blue', alpha=0.3)
     plt.plot(actual, label='actual', color='#f48024')

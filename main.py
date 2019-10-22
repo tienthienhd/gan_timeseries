@@ -2,13 +2,15 @@ from data import DataSets
 from run import run
 
 if __name__ == '__main__':
-    dataset = DataSets('data/gg_trace/5.csv',
-                       usecols=[3],
+    dataset = DataSets('data/traffic/internet-traffic-data-in-bits-fr_EU_5m.csv',
+                       usecols=[1],
                        column_names=['cpu'],
-                       header=None,
+                       header=0,
                        n_in=1,
                        n_out=1,
                        is_diff=True,
+                       is_log=True,
+                       is_stand=True,
                        feature_range=(-1, 1))
 
     config_ann = {
@@ -91,7 +93,7 @@ if __name__ == '__main__':
 
     config_gru_gan = {
         "params_generator": {
-            "layer_size": [4, dataset.get_input_shape()[-1]],
+            "layer_size": [32, dataset.get_input_shape()[-1]],
             "activation": 'tanh',
             "dropout": 0,
             "output_activation": "tanh",
@@ -120,8 +122,8 @@ if __name__ == '__main__':
 
     config_train = {
         "validation_split": 0.2,
-        "batch_size": 16,
-        "epochs": 5,
+        "batch_size": 32,
+        "epochs": 20,
         "verbose": 1,
         "step_print": 1
     }

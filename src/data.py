@@ -101,7 +101,7 @@ class DataSets(object):
             data = pd.DataFrame(data)
         data_reduced = data.applymap(np.log1p)
 
-        return data_reduced
+        return data_reduced.values
 
     def _invert_range(self, data):
         """
@@ -112,7 +112,7 @@ class DataSets(object):
         if not isinstance(data, pd.DataFrame):
             data = pd.DataFrame(data)
         data = data.applymap(lambda x: np.exp(x) - 1)
-        return data
+        return data.values
 
     def _difference(self, data, interval=1):
         cols = None
@@ -120,7 +120,7 @@ class DataSets(object):
             cols = data.columns
             data = data.values
         diff = data[interval:] - data[:-interval]
-        diff = pd.DataFrame(diff, columns=cols)
+        # diff = pd.DataFrame(diff, columns=cols)
         return diff
 
     def _invert_difference(self, history_type, data, interval=1):
@@ -145,4 +145,4 @@ class DataSets(object):
             result = history + data
         else:
             result = history[:-interval] + data
-        return pd.DataFrame(result, columns=cols)
+        return result
