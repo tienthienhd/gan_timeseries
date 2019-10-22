@@ -57,7 +57,8 @@ class Model:
                 print("Datasets had been split to train [{}-{}] and val [{} - {}]".format(x_train.shape, y_train.shape,
                                                                                           x_val.shape, y_val.shape))
         for epoch in range(epochs):
-            print("Epoch {}/{}".format(epoch + 1, epochs), end=":")
+            if verbose > 0 and (epoch + 1) % step_print == 0:
+                print("Epoch {}/{}".format(epoch + 1, epochs), end=":")
             self._step_batch(x_train, y_train, batch_size, mode='train')
             if do_validation:
                 result_eval = self.evaluate(x_val, y_val)

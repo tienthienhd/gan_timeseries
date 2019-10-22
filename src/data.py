@@ -14,13 +14,15 @@ class DataSets(object):
                  header=None,
                  n_in=1,
                  n_out=1,
+                 test_size=0.2,
                  is_log=True,
                  is_diff=True,
                  is_stand=True,
                  is_scale=True,
-                 feature_range=(0,1),
+                 feature_range=(0, 1),
                  debug=False,
                  show_plot=False, **kwargs):
+        self.test_size=test_size
         self.is_log = is_log
         self.is_diff = is_diff
         self.is_stand = is_stand
@@ -77,7 +79,8 @@ class DataSets(object):
     def get_input_shape(self):
         return list(self.x.shape[1:])
 
-    def get_data(self, test_size=0):
+    def get_data(self):
+        test_size = self.test_size
         x = self.x
         y = self.y
         if test_size == 0:

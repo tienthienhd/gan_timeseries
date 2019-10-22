@@ -73,3 +73,26 @@ class FlnnGan(GanModel):
 
         super().__init__(generator, discriminator, input_shape, noise_shape, optimizer_g, optimizer_d, num_train_d,
                          model_dir, is_wgan)
+
+
+class GruGan(GanModel):
+    def __init__(self,
+                 params_generator,
+                 params_discriminator,
+                 input_shape,
+                 noise_shape,
+                 optimizer_g,
+                 optimizer_d,
+                 learning_rate_g,
+                 learning_rate_d,
+                 num_train_d,
+                 is_wgan=False,
+                 model_dir='logs/ann_gan'):
+        generator = RnnNet(params_generator, 'generator')
+        discriminator = RnnNet(params_discriminator, 'discriminator')
+
+        optimizer_g = utils.get_optimizer(optimizer_g, learning_rate_g)
+        optimizer_d = utils.get_optimizer(optimizer_d, learning_rate_d)
+
+        super().__init__(generator, discriminator, input_shape, noise_shape, optimizer_g, optimizer_d, num_train_d,
+                         model_dir, is_wgan)
