@@ -75,16 +75,16 @@ if __name__ == '__main__':
     path_log = "../logs/tuning/" + model_tuning
 
     domain = [
-        {'name': 'n_in', 'type': 'categorical', 'domain': [1, 2, 3, 4, 5, 6, 7, 8]},
-        {'name': 'n_out', 'type': 'categorical', 'domain': [1]},
-        {'name': 'g_layer_size', 'type': 'categorical', 'domain': [2, 4, 8, 16, 32, 64]},
+        {'name': 'n_in', 'type': 'discrete', 'domain': [1, 2, 3, 4, 5, 6, 7, 8]},
+        {'name': 'n_out', 'type': 'discrete', 'domain': [1]},
+        {'name': 'g_layer_size', 'type': 'discrete', 'domain': [2, 4, 8, 16, 32, 64]},
         {'name': 'g_dropout', 'type': 'continuous', 'domain': (0, 0.8)},
 
-        {'name': 'd_layer_size', 'type': 'categorical', 'domain': [2, 4, 8, 16, 32, 64]},
+        {'name': 'd_layer_size', 'type': 'discrete', 'domain': [2, 4, 8, 16, 32, 64]},
         {'name': 'd_dropout', 'type': 'continuous', 'domain': (0, 0.8)},
         {'name': 'learning_rate', 'type': 'continuous', 'domain': (0.0001, 0.1)},
-        {'name': 'num_train_d', 'type': 'categorical', 'domain': [1, 2, 3, 4, 5]},
-        {'name': 'batch_size', 'type': 'categorical', 'domain': [4, 8, 16, 32]},
+        {'name': 'num_train_d', 'type': 'discrete', 'domain': [1, 2, 3, 4, 5]},
+        {'name': 'batch_size', 'type': 'discrete', 'domain': [4, 8, 16, 32]},
 
 
     ]
@@ -95,7 +95,7 @@ if __name__ == '__main__':
                                constraints=constraints,
                                num_cores=6,
                                batch_size=4,
-                               initial_design_numdata=40)
+                               initial_design_numdata=20)
 
     opt.run_optimization(max_iter=100, max_time=np.inf, verbosity=True,
                          report_file=os.path.join(path_log, 'report.txt'),
