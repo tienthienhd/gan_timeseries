@@ -12,7 +12,7 @@ if __name__ == '__main__':
                        is_log=False,
                        is_stand=False,
                        is_scale=True,
-                       feature_range=(-1, 1))
+                       feature_range=(0, 1))
 
     config_ann = {
         "params": {
@@ -70,16 +70,17 @@ if __name__ == '__main__':
     config_ann_gan = {
         "params_generator": {
             "layer_size": [32, dataset.get_output_shape()[0] * dataset.get_output_shape()[1]],
-            "activation": 'tanh',
+            "activation": 'sigmoid',
             "dropout": 0,
+            "concat_noise": "before",
             "output_activation": None
 
         },
         "params_discriminator": {
-            "layer_size": [16, dataset.get_output_shape()[0] * dataset.get_output_shape()[1]],
-            "activation": 'tanh',
+            "layer_size": [4, dataset.get_output_shape()[0] * dataset.get_output_shape()[1]],
+            "activation": 'sigmoid',
             "dropout": 0,
-            "output_activation": 'sigmoid'
+            "output_activation": "sigmoid"
 
         },
         "input_shape": dataset.get_input_shape(),
@@ -89,7 +90,7 @@ if __name__ == '__main__':
         "optimizer_d": 'rmsprop',
         "learning_rate_g": 0.001,
         "learning_rate_d": 0.001,
-        "num_train_d": 2,
+        "num_train_d": 1,
         "is_wgan": False,
         "model_dir": "logs/ann_gan"
     }
