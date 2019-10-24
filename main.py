@@ -1,6 +1,5 @@
 from data import DataSets
-from run import run
-
+import run
 if __name__ == '__main__':
     dataset = DataSets('data/traffic/internet-traffic-data-in-bits-fr_EU_5m.csv',
                        usecols=[1],
@@ -127,5 +126,5 @@ if __name__ == '__main__':
         "verbose": 1,
         "step_print": 1
     }
-    run('GruGan', config_init=config_gru_gan, config_train=config_train,
+    run.run_test('GruGan', config_init=config_gru_gan, config_train=config_train,
         dataset=dataset)
