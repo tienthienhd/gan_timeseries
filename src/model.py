@@ -75,9 +75,10 @@ class Model:
 
 class RegressionModel(Model):
 
-    def __init__(self, net, input_shape, optimizer, model_dir):
+    def __init__(self, net, input_shape, output_shape, optimizer, model_dir):
         self.net = net
         self.input_shape = input_shape
+        self.output_shape = output_shape
         self.optimizer = optimizer
         super().__init__(model_dir)
 
@@ -85,7 +86,7 @@ class RegressionModel(Model):
         self._x = tf.placeholder(tf.float32, [None] + self.input_shape, 'x')
 
         self._pred = self.net(self._x)
-        # self._pred = tf.reshape(self._pred, (-1, 1, self._pred.shape[-1]))
+        self._pred = tf.reshape(self._pred, [-1] + self.output_shape)
         self._y = tf.placeholder(tf.float32, self._pred.shape, 'y')
 
         self._loss = tf.losses.mean_squared_error(self._y, self._pred)
@@ -101,11 +102,12 @@ class RegressionModel(Model):
 
 class GanModel(Model):
 
-    def __init__(self, generator, discriminator, input_shape, noise_shape, optimizer_g, optimizer_d, num_train_d,
+    def __init__(self, generator, discriminator, input_shape, output_shape, noise_shape, optimizer_g, optimizer_d, num_train_d,
                  model_dir, is_wgan=False):
         self.generator = generator
         self.discriminator = discriminator
         self.input_shape = input_shape
+        self.output_shape = output_shape
         self.noise_shape = noise_shape
         self.optimizer_g = optimizer_g
         self.optimizer_d = optimizer_d
@@ -118,16 +120,17 @@ class GanModel(Model):
         self._z = tf.placeholder(tf.float32, [None] + self.noise_shape, 'noise')
 
         self._pred = self.generator(x=self._x, z=self._z)
+        self._pred = tf.reshape(self._pred, [-1] + self.output_shape)
 
         self._y = tf.placeholder(tf.float32, self._pred.shape, 'y')
 
-        _pred = tf.reshape(self._pred, (-1, 1, self._pred.shape[-1]))
-        _y = tf.reshape(self._y, (-1, 1, self._y.shape[-1]))
-        x_fake = tf.concat([self._x, _pred], axis=1, name='x_fake')
-        x_real = tf.concat([self._x, _y], axis=1, name='x_real')
+        # _pred = tf.reshape(self._pred, (-1, 1, self._pred.shape[-1]))
+        # _y = tf.reshape(self._y, (-1, 1, self._y.shape[-1]))
+        x_fake = tf.concat([self._x, self._pred], axis=1, name='x_fake')
+        x_real = tf.concat([self._x, self._y], axis=1, name='x_real')
 
-        d_fake = self.discriminator(x_fake, reuse=False)
-        d_real = self.discriminator(x_real, reuse=True)
+        d_fake = self.discriminator(self._pred, reuse=False)
+        d_real = self.discriminator(self._y, reuse=True)
 
         if self.is_wgan:
             self._loss_g, self._loss_d = self._loss_wgan(d_fake, d_real)
