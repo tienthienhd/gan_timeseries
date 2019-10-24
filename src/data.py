@@ -32,7 +32,7 @@ class DataSets(object):
         self.min_max_scaler = MinMaxScaler(feature_range=feature_range)
         self.standard_scaler = StandardScaler()
 
-        history, data = self.transform(self._data_raw)
+        history, data = self.transform(self._data_raw.values)
         self.history = history[n_in:]
 
         data_supervised = utils.make_data_supervise(data, n_in, n_out)
@@ -78,6 +78,9 @@ class DataSets(object):
 
     def get_input_shape(self):
         return list(self.x.shape[1:])
+
+    def get_output_shape(self):
+        return list(self.y.shape[1:])
 
     def get_data(self):
         test_size = self.test_size
@@ -146,3 +149,5 @@ class DataSets(object):
         else:
             result = history[:-interval] + data
         return result
+
+

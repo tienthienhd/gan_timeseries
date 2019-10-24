@@ -126,5 +126,5 @@ if __name__ == '__main__':
         "verbose": 1,
         "step_print": 1
     }
-    run.run_test('GruGan', config_init=config_gru_gan, config_train=config_train,
+    run('GruGan', config_init=config_gru_gan, config_train=config_train,
         dataset=dataset)

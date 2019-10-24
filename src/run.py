@@ -10,15 +10,28 @@ from metrics import evaluate
 
 def run(model, config_init, config_train, dataset: DataSets):
     x_train, x_test, y_train, y_test = dataset.get_data()
-    y_train = y_train.reshape((-1, y_train.shape[-1]))
+    # y_train = y_train.reshape((-1, y_train.shape[-1]))
 
     model = getattr(model_zoo, model)(**config_init)
     model.fit(x_train, y_train, **config_train)
 
     pred = model.predict(x_test)
-    pred = np.reshape(pred, (-1, y_test.shape[-1]))
+    # pred = np.reshape(pred, (-1, y_test.shape[-1]))
+    #
+    # y_test = np.reshape(y_test, (-1, y_test.shape[-1]))
 
-    y_test = np.reshape(y_test, (-1, y_test.shape[-1]))
+    plt.figure()
+    start = 0
+    end = 2000
+    step = 1
+    if step == 1:
+        plt.plot(pred[start:end, 0])
+    for i in range(start, end, step):
+        plt.plot(range(i, i+step), pred[i])
+    plt.plot(range(start, end), y_test[start:end, 0, 0], label='actual')
+    plt.legend()
+    plt.show()
+    return 1
 
     pred_invert = dataset.invert_transform(pred)
     y_test_invert = dataset.invert_transform(y_test)
