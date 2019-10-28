@@ -7,7 +7,8 @@ __all__ = [
     "AnnModel",
     "AnnGan",
     "FlnnModel",
-    "FlnnFlnnGan"
+    "FlnnGan",
+    "GruModel"
 
     # "LstmGan",
     # "GruGan",
@@ -16,17 +17,26 @@ __all__ = [
 
 
 class AnnModel(RegressionModel):
-    def __init__(self, params, input_shape, optimizer, learning_rate, model_dir='logs/ann'):
+    def __init__(self, params, input_shape, output_shape, optimizer, learning_rate, model_dir='logs/ann'):
         net = DenseNet(params, 'dense_net')
         optimizer = utils.get_optimizer(optimizer, learning_rate)
-        super().__init__(net, input_shape=input_shape, optimizer=optimizer, model_dir=model_dir)
+        super().__init__(net, input_shape=input_shape, output_shape=output_shape, optimizer=optimizer,
+                         model_dir=model_dir)
+
+
+class GruModel(RegressionModel):
+    def __init__(self, params, input_shape, output_shape, optimizer, learning_rate, model_dir='logs/ann'):
+        net = RnnNet(params, 'net')
+        optimizer = utils.get_optimizer(optimizer, learning_rate)
+        super().__init__(net, input_shape=input_shape, output_shape=output_shape, optimizer=optimizer,
+                         model_dir=model_dir)
 
 
 class FlnnModel(RegressionModel):
-    def __init__(self, params, input_shape, optimizer, learning_rate, model_dir='logs/flnn'):
+    def __init__(self, params, input_shape, output_shape, optimizer, learning_rate, model_dir='logs/flnn'):
         net = FlnnNet(params, 'flnn')
         optimizer = utils.get_optimizer(optimizer, learning_rate)
-        super().__init__(net, input_shape, optimizer, model_dir)
+        super().__init__(net, input_shape, output_shape, optimizer, model_dir)
 
 
 class AnnGan(GanModel):
@@ -34,6 +44,7 @@ class AnnGan(GanModel):
                  params_generator,
                  params_discriminator,
                  input_shape,
+                 output_shape,
                  noise_shape,
                  optimizer_g,
                  optimizer_d,
@@ -48,7 +59,8 @@ class AnnGan(GanModel):
         optimizer_g = utils.get_optimizer(optimizer_g, learning_rate_g)
         optimizer_d = utils.get_optimizer(optimizer_d, learning_rate_d)
 
-        super().__init__(generator, discriminator, input_shape, noise_shape, optimizer_g, optimizer_d, num_train_d,
+        super().__init__(generator, discriminator, input_shape, output_shape, noise_shape, optimizer_g, optimizer_d,
+                         num_train_d,
                          model_dir, is_wgan)
 
 
@@ -57,6 +69,7 @@ class FlnnGan(GanModel):
                  params_generator,
                  params_discriminator,
                  input_shape,
+                 output_shape,
                  noise_shape,
                  optimizer_g,
                  optimizer_d,
@@ -71,7 +84,8 @@ class FlnnGan(GanModel):
         optimizer_g = utils.get_optimizer(optimizer_g, learning_rate_g)
         optimizer_d = utils.get_optimizer(optimizer_d, learning_rate_d)
 
-        super().__init__(generator, discriminator, input_shape, noise_shape, optimizer_g, optimizer_d, num_train_d,
+        super().__init__(generator, discriminator, input_shape, output_shape, noise_shape, optimizer_g, optimizer_d,
+                         num_train_d,
                          model_dir, is_wgan)
 
 
@@ -80,6 +94,7 @@ class GruGan(GanModel):
                  params_generator,
                  params_discriminator,
                  input_shape,
+                 output_shape,
                  noise_shape,
                  optimizer_g,
                  optimizer_d,
@@ -94,5 +109,6 @@ class GruGan(GanModel):
         optimizer_g = utils.get_optimizer(optimizer_g, learning_rate_g)
         optimizer_d = utils.get_optimizer(optimizer_d, learning_rate_d)
 
-        super().__init__(generator, discriminator, input_shape, noise_shape, optimizer_g, optimizer_d, num_train_d,
+        super().__init__(generator, discriminator, input_shape, output_shape, noise_shape, optimizer_g, optimizer_d,
+                         num_train_d,
                          model_dir, is_wgan)

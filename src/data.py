@@ -2,6 +2,7 @@ import math
 import numpy as np
 import utils
 import pandas as pd
+import sklearn
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.model_selection import train_test_split
 
@@ -32,7 +33,7 @@ class DataSets(object):
         self.min_max_scaler = MinMaxScaler(feature_range=feature_range)
         self.standard_scaler = StandardScaler()
 
-        history, data = self.transform(self._data_raw)
+        history, data = self.transform(self._data_raw.values)
         self.history = history[n_in:]
 
         data_supervised = utils.make_data_supervise(data, n_in, n_out)
@@ -79,6 +80,9 @@ class DataSets(object):
     def get_input_shape(self):
         return list(self.x.shape[1:])
 
+    def get_output_shape(self):
+        return list(self.y.shape[1:])
+
     def get_data(self):
         test_size = self.test_size
         x = self.x
@@ -87,6 +91,8 @@ class DataSets(object):
             return x, y
         else:
             x_train, x_test, y_train, y_test = train_test_split(x, y, shuffle=False, test_size=test_size)
+            # x_train, y_train = sklearn.utils.shuffle(x_train, y_train)
+
             self.history_train = self.history[:-len(x_test) - 1]
             self.history_test = self.history[-len(x_test) - 1:-1]
             return x_train, x_test, y_train, y_test
@@ -146,3 +152,5 @@ class DataSets(object):
         else:
             result = history[:-interval] + data
         return result
+
+
