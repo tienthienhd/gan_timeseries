@@ -3,6 +3,7 @@ author: Boris Shishov
 """
 
 import numpy as np
+from scipy.spatial import distance
 
 EPSILON = 1e-10
 
@@ -252,6 +253,12 @@ def mda(actual: np.ndarray, predicted: np.ndarray):
     return np.mean((np.sign(actual[1:] - actual[:-1]) == np.sign(predicted[1:] - predicted[:-1])).astype(int))
 
 
+def jensenshannon(actual: np.ndarray, predicted: np.ndarray):
+    actual_dis, bin_edges_actual = np.histogram(actual, bins=100)
+    predict_dis, bin_edges_predict = np.histogram(predicted, bins=100)
+    return distance.jensenshannon(actual_dis, predict_dis)
+
+
 METRICS = {
     'mse': mse,
     'rmse': rmse,
@@ -283,6 +290,7 @@ METRICS = {
     'mbrae': mbrae,
     'umbrae': umbrae,
     'mda': mda,
+    "jsd": jensenshannon,
 }
 
 

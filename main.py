@@ -2,15 +2,16 @@ from data import DataSets
 import run
 
 if __name__ == '__main__':
-    dataset = DataSets('data/gg_trace/5.csv',
-                       usecols=[3],
+    dataset = DataSets('data/gg_trace/gg_trace_5m.csv',
+                       usecols=[1],
                        column_names=['cpu'],
                        header=None,
-                       n_in=4,
+                       n_in=1,
                        n_out=1,
                        is_diff=True,
                        is_log=True,
                        is_stand=True,
+                       test_size=0.2,
                        feature_range=(-1, 1))
 
     config_ann = {
@@ -95,7 +96,7 @@ if __name__ == '__main__':
         "params_generator": {
             "layer_size": [32, dataset.get_input_shape()[-1]],
             "activation": 'tanh',
-            "dropout": 0.3,
+            "dropout": 0,
             "output_activation": "tanh",
             "cell_type": "gru",
             "concat_noise": "after"
@@ -104,7 +105,7 @@ if __name__ == '__main__':
         "params_discriminator": {
             "layer_size": [16, dataset.get_input_shape()[-1]],
             "activation": 'tanh',
-            "dropout": 0.3,
+            "dropout": 0,
             "output_activation": 'sigmoid',
             "cell_type": "gru"
 
@@ -114,8 +115,8 @@ if __name__ == '__main__':
         "noise_shape": dataset.get_input_shape(),
         "optimizer_g": 'rmsprop',
         "optimizer_d": 'rmsprop',
-        "learning_rate_g": 0.01,
-        "learning_rate_d": 0.01,
+        "learning_rate_g": 0.001,
+        "learning_rate_d": 0.001,
         "num_train_d": 2,
         "is_wgan": False,
         "model_dir": "logs/ann_gan"
@@ -140,9 +141,9 @@ if __name__ == '__main__':
     config_train = {
         "validation_split": 0.2,
         "batch_size": 8,
-        "epochs": 10,
+        "epochs": 2,
         "verbose": 1,
         "step_print": 1
     }
-    run.run_test('GruModel', config_init=config_gru, config_train=config_train,
+    run.run_test('GruGan', config_init=config_gru_gan, config_train=config_train,
                  dataset=dataset)

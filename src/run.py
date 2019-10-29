@@ -67,7 +67,7 @@ def run_test(model, config_init, config_train, dataset: DataSets):
     plt.figure()
     preds = []
     pred_raw = []
-    for i in range(50):
+    for i in range(10):
         pred = model.predict(x_test)
         # print(pred.shape)
         pred = np.reshape(pred, (-1, y_test.shape[-1]))
@@ -96,7 +96,7 @@ def run_test(model, config_init, config_train, dataset: DataSets):
     pred = np.expand_dims(pred, axis=1)
     print(pred.shape)
 
-    result_eval = evaluate(y_test, pred, metrics=['mae', 'rmse', 'mape', 'smape'])
+    result_eval = evaluate(y_test, pred, metrics=['mae', 'rmse', 'mape', 'smape', 'jsd'])
 
     print("Result test:", result_eval)
 
