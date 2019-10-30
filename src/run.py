@@ -68,7 +68,7 @@ def run_test(model, config_init, config_train, dataset: DataSets):
     plt.figure()
     preds = []
     pred_raw = []
-    for i in range(50):
+    for i in range(10):
         pred = model.predict(x_test)
         # print(pred.shape)
         pred = np.reshape(pred, (-1, y_test.shape[-1]))
@@ -115,6 +115,7 @@ def plot(actual, predicts, predict_mean, title=None):
 
     pred_mean = np.mean(pred_concat, axis=1)
     pred_std = np.std(pred_concat, axis=1)
+    print("Mean std:", pred_std.mean())
     pred_mean = pred_mean.reshape(len(pred_mean))
 
     pred_upper_95 = pred_mean + 1.96 * pred_std

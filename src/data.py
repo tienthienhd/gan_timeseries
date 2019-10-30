@@ -91,7 +91,7 @@ class DataSets(object):
             return x, y
         else:
             x_train, x_test, y_train, y_test = train_test_split(x, y, shuffle=False, test_size=test_size)
-            # x_train, y_train = sklearn.utils.shuffle(x_train, y_train)
+            x_train, y_train = sklearn.utils.shuffle(x_train, y_train)
 
             self.history_train = self.history[:-len(x_test) - 1]
             self.history_test = self.history[-len(x_test) - 1:-1]
