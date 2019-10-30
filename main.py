@@ -2,11 +2,11 @@ from data import DataSets
 import run
 
 if __name__ == '__main__':
-    dataset = DataSets('data/gg_trace/gg_trace_5m.csv',
+    dataset = DataSets('data/traffic/internet-traffic-data-in-bits-fr_EU_5m.csv',
                        usecols=[1],
                        column_names=['cpu'],
-                       header=None,
-                       n_in=1,
+                       header=0,
+                       n_in=4,
                        n_out=1,
                        is_diff=True,
                        is_log=True,
@@ -100,7 +100,6 @@ if __name__ == '__main__':
             "output_activation": "tanh",
             "cell_type": "gru",
             "concat_noise": "after"
-
         },
         "params_discriminator": {
             "layer_size": [16, dataset.get_input_shape()[-1]],
@@ -112,11 +111,11 @@ if __name__ == '__main__':
         },
         "input_shape": dataset.get_input_shape(),
         "output_shape": dataset.get_output_shape(),
-        "noise_shape": dataset.get_input_shape(),
+        "noise_shape": [32, 1],
         "optimizer_g": 'rmsprop',
         "optimizer_d": 'rmsprop',
-        "learning_rate_g": 0.001,
-        "learning_rate_d": 0.001,
+        "learning_rate_g": 0.01,
+        "learning_rate_d": 0.01,
         "num_train_d": 2,
         "is_wgan": False,
         "model_dir": "logs/ann_gan"

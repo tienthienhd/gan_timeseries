@@ -61,13 +61,14 @@ def run_test(model, config_init, config_train, dataset: DataSets):
     x_train, x_test, y_train, y_test = dataset.get_data()
     # y_train = y_train.reshape((-1, y_train.shape[-1]))
 
+    name = model
     model = getattr(model_zoo, model)(**config_init)
     model.fit(x_train, y_train, **config_train)
 
     plt.figure()
     preds = []
     pred_raw = []
-    for i in range(10):
+    for i in range(50):
         pred = model.predict(x_test)
         # print(pred.shape)
         pred = np.reshape(pred, (-1, y_test.shape[-1]))
@@ -100,12 +101,12 @@ def run_test(model, config_init, config_train, dataset: DataSets):
 
     print("Result test:", result_eval)
 
-    plot(y_test, preds, pred)
+    plot(y_test, preds, pred, title=name)
     plot_distribution(y_test, preds, pred)
     plt.show()
 
 
-def plot(actual, predicts, predict_mean):
+def plot(actual, predicts, predict_mean, title=None):
     plt.figure()
     pred_concat = np.concatenate(predicts, axis=1)
 
@@ -122,13 +123,14 @@ def plot(actual, predicts, predict_mean):
     pred_upper_80 = pred_mean + 1.28 * pred_std
     pred_lower_80 = pred_mean - 1.28 * pred_std
 
-    plt.fill_between(range(len(pred_concat)), pred_min, pred_max, alpha=0.6, label='min-max-range')
+    plt.fill_between(range(len(pred_concat)), pred_min, pred_max, alpha=0.8, label='min-max-range')
     plt.fill_between(range(len(pred_concat)), pred_lower_95, pred_upper_95, alpha=0.4, label='interval 95%')
-    plt.fill_between(range(len(pred_concat)), pred_lower_80, pred_upper_80, alpha=0.4, label='interval 80%')
+    plt.fill_between(range(len(pred_concat)), pred_lower_80, pred_upper_80, alpha=0.3, label='interval 80%')
     # for p in predicts:
     #     plt.plot(p, color='blue', alpha=0.3)
     plt.plot(actual, label='actual', color='#f48024')
     plt.plot(predict_mean, label='predict', color='green')
+    plt.title(title)
     plt.legend()
 
 
