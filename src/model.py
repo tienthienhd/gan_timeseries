@@ -117,16 +117,18 @@ class GanModel(Model):
 
     def _build_model(self):
         self._x = tf.placeholder(tf.float32, [None] + self.input_shape, 'x')
-        self._z = tf.placeholder(tf.float32, [None] + self.noise_shape, 'noise')
+        self._z = tf.placeholder(tf.float32, [10, None] + self.noise_shape, 'noise')
 
-        self._pred = self.generator(x=self._x, z=self._z)
-        self._pred = tf.reshape(self._pred, [-1] + self.output_shape)
+        # self._pred = self.generator(x=self._x, z=self._z)
+        # self._pred = tf.reshape(self._pred, [-1] + self.output_shape)
 
         predicts = []
         for i in range(10):
-            p = self.generator(x=self._x, z=self._z)
+            p = self.generator(x=self._x, z=self._z[i])
             p = tf.reshape(p, [-1] + self.output_shape)
             predicts.append(p)
+
+        self._pred = tf.math.reduce_mean(predicts, axis=0)
 
 
         self._y = tf.placeholder(tf.float32, self._pred.shape, 'y')
@@ -142,8 +144,11 @@ class GanModel(Model):
         if self.is_wgan:
             self._loss_g, self._loss_d = self._loss_wgan(d_fake, d_real)
         else:
-            self._loss_g, self._loss_d = self._loss_gan(d_fake, d_real)
-            # self._loss_g, self._loss_d = self.custom_loss(d_fake, d_real, predicts, self._y)
+            # self._loss_g, self._loss_d = self._loss_gan(d_fake, d_real)
+            # self._loss_g = tf.Print(self._loss_g, [self._loss_g], message="loss_g before")
+            # self._loss_g += tf.losses.mean_squared_error(self._y, self._pred)
+            # self._loss_g = tf.Print(self._loss_g, [self._loss_g], message="loss_g after")
+            self._loss_g, self._loss_d = self.custom_loss(d_fake, d_real, predicts, self._y)
 
         d_vars, self._train_d = self._train_op(self._loss_d, self.optimizer_d, scope='discriminator')
         g_vars, self._train_g = self._train_op(self._loss_g, self.optimizer_g, scope='generator')
@@ -196,5 +201,5 @@ class GanModel(Model):
                                   {self._x: x, self._z: self._get_noise(len(x)), self._y: y})
 
     def _get_noise(self, batch_size, loc=0, scale=1):
-        noise_shape = [batch_size] + self.noise_shape
+        noise_shape = [10, batch_size] + self.noise_shape
         return np.random.normal(loc=loc, scale=scale, size=noise_shape)
