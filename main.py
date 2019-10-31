@@ -2,11 +2,11 @@ from data import DataSets
 import run
 
 if __name__ == '__main__':
-    dataset = DataSets('data/gg_trace/5.csv',
-                       usecols=[3],
+    dataset = DataSets('data/traffic/it_uk_5m.csv',
+                       usecols=[1],
                        column_names=['cpu'],
-                       header=None,
-                       n_in=12,
+                       header=0,
+                       n_in=4,
                        n_out=1,
                        is_diff=True,
                        is_log=True,

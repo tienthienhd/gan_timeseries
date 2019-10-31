@@ -113,17 +113,18 @@ class GanModel(Model):
         self.optimizer_d = optimizer_d
         self.num_train_d = num_train_d
         self.is_wgan = is_wgan
+        self.n_gen = 10
         super().__init__(model_dir)
 
     def _build_model(self):
         self._x = tf.placeholder(tf.float32, [None] + self.input_shape, 'x')
-        self._z = tf.placeholder(tf.float32, [10, None] + self.noise_shape, 'noise')
+        self._z = tf.placeholder(tf.float32, [self.n_gen, None] + self.noise_shape, 'noise')
 
         # self._pred = self.generator(x=self._x, z=self._z)
         # self._pred = tf.reshape(self._pred, [-1] + self.output_shape)
 
         predicts = []
-        for i in range(10):
+        for i in range(self.n_gen):
             p = self.generator(x=self._x, z=self._z[i])
             p = tf.reshape(p, [-1] + self.output_shape)
             predicts.append(p)
@@ -201,5 +202,5 @@ class GanModel(Model):
                                   {self._x: x, self._z: self._get_noise(len(x)), self._y: y})
 
     def _get_noise(self, batch_size, loc=0, scale=1):
-        noise_shape = [10, batch_size] + self.noise_shape
+        noise_shape = [self.n_gen, batch_size] + self.noise_shape
         return np.random.normal(loc=loc, scale=scale, size=noise_shape)
