@@ -2,10 +2,10 @@ from data import DataSets
 import run
 
 if __name__ == '__main__':
-    dataset = DataSets('data/traffic/it_uk_5m.csv',
-                       usecols=[1],
+    dataset = DataSets('data/gg_trace/5.csv',
+                       usecols=[3],
                        column_names=['cpu'],
-                       header=0,
+                       header=None,
                        n_in=4,
                        n_out=1,
                        is_diff=True,
