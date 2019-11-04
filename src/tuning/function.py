@@ -72,7 +72,7 @@ def fitness_function(param):
 
     validation_split = 0.2
     batch_size = int(param[8])
-    epochs = 1
+    epochs = 10
     verbose = 0
     step_print = 1
 

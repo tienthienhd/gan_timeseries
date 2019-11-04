@@ -182,7 +182,7 @@ if __name__ == '__main__':
 
     from tuning.function import fitness_function
 
-    a = PSO(fitness_function, template_space, num_particles=10)
+    a = PSO(fitness_function, template_space, num_particles=50)
     a.run(10)
 
     # from tuning.metaheuristic.function_utils import *
