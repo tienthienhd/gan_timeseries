@@ -4,10 +4,11 @@ import multiprocessing as mp
 
 
 class Particle:
-    def __init__(self, type_attr, min_val, max_val, w, c1, c2):
+    def __init__(self, type_attr, min_val, max_val, range_val, w, c1, c2):
         self.type_attr = type_attr
         self.min_val = min_val
         self.max_val = max_val
+        self.range_val = range_val
 
         self.w = w
         self.c1 = c1
@@ -28,9 +29,19 @@ class Particle:
                 position[i] = int(position[i])
         return position
 
+    def decode_position(self, position):
+        result = []
+        for i, t in enumerate(self.type_attr):
+            if t == 'discrete':
+                result.append(self.range_val[i][int(position[i])])
+            else:
+                result.append(position[i])
+
+        return result
+
     # evaluate current fitness
     def evaluate(self, cost_function):
-        self.err = cost_function(self.position)
+        self.err = cost_function(self.decode_position(self.position))
 
         # check to see if the current position is an individual best
         if self.err < self.err_best or self.err_best == -1:
@@ -99,7 +110,8 @@ class PSO:
     def _create_particles(self):
         self.particles = []
         for i in range(self.num_particles):
-            self.particles.append(Particle(self.type_attr, self.min_val, self.max_val, w=0.6, c1=1.2, c2=1.2))
+            self.particles.append(
+                Particle(self.type_attr, self.min_val, self.max_val, self.range_val, w=0.6, c1=1.2, c2=1.2))
 
     def run(self, max_iter):
         w_max = 0.9
