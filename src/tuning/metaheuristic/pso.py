@@ -113,7 +113,6 @@ class PSO:
 
             # cycle through particles in swarm and evaluate fitness
             for particle in self.particles:
-                pool = mp.Pool()
                 particle.evaluate(self.cost_function)
 
                 # determine if current particle is the best (globally)
@@ -153,13 +152,13 @@ if __name__ == '__main__':
         {'name': 'x6', 'type': 'continuous', 'domain': (-100, 100)},
         {'name': 'x7', 'type': 'continuous', 'domain': (-100, 100)},
         {'name': 'x8', 'type': 'continuous', 'domain': (-100, 100)},
-        {'name': 'x9', 'type': 'continuous', 'domain': (-100, 100)},
-        {'name': 'x10', 'type': 'continuous', 'domain': (-100, 100)},
-        {'name': 'x11', 'type': 'continuous', 'domain': (-100, 100)},
-        {'name': 'x12', 'type': 'continuous', 'domain': (-100, 100)},
-        {'name': 'x13', 'type': 'continuous', 'domain': (-100, 100)},
-        {'name': 'x14', 'type': 'continuous', 'domain': (-100, 100)},
-        {'name': 'x15', 'type': 'continuous', 'domain': (-100, 100)},
+        # {'name': 'x9', 'type': 'continuous', 'domain': (-100, 100)},
+        # {'name': 'x10', 'type': 'continuous', 'domain': (-100, 100)},
+        # {'name': 'x11', 'type': 'continuous', 'domain': (-100, 100)},
+        # {'name': 'x12', 'type': 'continuous', 'domain': (-100, 100)},
+        # {'name': 'x13', 'type': 'continuous', 'domain': (-100, 100)},
+        # {'name': 'x14', 'type': 'continuous', 'domain': (-100, 100)},
+        # {'name': 'x15', 'type': 'continuous', 'domain': (-100, 100)},
         # {'name': 'x16', 'type': 'continuous', 'domain': (-100, 100)},
         # {'name': 'x17', 'type': 'continuous', 'domain': (-100, 100)},
         # {'name': 'x18', 'type': 'continuous', 'domain': (-100, 100)},
@@ -169,7 +168,7 @@ if __name__ == '__main__':
 
     from tuning.metaheuristic.function_utils import *
     a = PSO(C30, domain, 1000)
-    a.run(100)
+    a.run(300)
 
     # def test(input_x):
     #     return C30(input_x[0])

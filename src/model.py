@@ -60,7 +60,7 @@ class Model:
             if verbose > 0 and (epoch + 1) % step_print == 0:
                 print("Epoch {}/{}".format(epoch + 1, epochs), end=":")
             self._step_batch(x_train, y_train, batch_size, mode='train')
-            if do_validation:
+            if do_validation and verbose > 0:
                 result_eval = self.evaluate(x_val, y_val)
                 if verbose > 0 and (epoch + 1) % step_print == 0:
                     print(result_eval)
