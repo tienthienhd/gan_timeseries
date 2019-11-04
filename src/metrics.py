@@ -298,7 +298,7 @@ def evaluate(actual: np.ndarray, predicted: np.ndarray, metrics=('mae', 'mse', '
     results = {}
     for name in metrics:
         try:
-            results[name] = METRICS[name](actual, predicted)
+            results[name] = round(METRICS[name](actual, predicted), 3)
         except Exception as err:
             results[name] = np.nan
             print('Unable to compute metric {0}: {1}'.format(name, err))

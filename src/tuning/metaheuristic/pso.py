@@ -166,9 +166,28 @@ if __name__ == '__main__':
         # {'name': 'x20', 'type': 'continuous', 'domain': (-100, 100)},
     ]
 
-    from tuning.metaheuristic.function_utils import *
-    a = PSO(C30, domain, 1000)
-    a.run(300)
+    template_space = [
+        {'name': 'n_in', 'type': 'discrete', 'domain': [1, 2, 3, 4, 5, 6, 7, 8]},
+        {'name': 'g_layer_size', 'type': 'discrete', 'domain': [2, 4, 8, 16, 32, 64]},
+        {'name': 'g_dropout', 'type': 'continuous', 'domain': (0, 0.5)},
+
+        {'name': 'd_layer_size', 'type': 'discrete', 'domain': [2, 4, 8, 16, 32, 64]},
+        {'name': 'd_dropout', 'type': 'continuous', 'domain': (0, 0.5)},
+        {'name': 'learning_rate', 'type': 'continuous', 'domain': (0.0001, 0.1)},
+        {'name': 'learning_rate', 'type': 'continuous', 'domain': (0.0001, 0.1)},
+        {'name': 'num_train_d', 'type': 'discrete', 'domain': [1, 2, 3, 4, 5]},
+        {'name': 'batch_size', 'type': 'discrete', 'domain': [4, 8, 16, 32]},
+
+    ]
+
+    from tuning.function import fitness_function
+
+    a = PSO(fitness_function, template_space, num_particles=10)
+    a.run(10)
+
+    # from tuning.metaheuristic.function_utils import *
+    # a = PSO(C30, domain, 1000)
+    # a.run(300)
 
     # def test(input_x):
     #     return C30(input_x[0])

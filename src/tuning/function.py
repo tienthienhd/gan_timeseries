@@ -1,4 +1,5 @@
 from data import DataSets
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -27,6 +28,7 @@ template_param = [1, 2, 0.3, 2, 0.1, 0.001, 0.001, 1, 1000]
 
 
 def fitness_function(param):
+    print("RUN PARAM:", param)
     model_name = "GruGan"
 
     n_in = int(param[0])
@@ -70,8 +72,8 @@ def fitness_function(param):
 
     validation_split = 0.2
     batch_size = int(param[8])
-    epochs = 2
-    verbose = 1
+    epochs = 1
+    verbose = 0
     step_print = 1
 
     config_init = {
@@ -112,10 +114,20 @@ def fitness_function(param):
         "step_print": step_print
     }
 
-    return run(model_name, config_init, config_train, data)
+    filename = "/home/tienthien/Desktop/Mine/gan_timeseries/logs/tuning/gru_gan/"
+    for k, v in config_init.items():
+        if k == 'model_dir':
+            continue
+        if not isinstance(v, dict):
+            filename += "{}_".format(v)
+        else:
+            for k1, v1 in v.items():
+                filename += "{}_".format(v1)
+
+    return run(model_name, config_init, config_train, data, filename)
 
 
-def run(model, config_init, config_train, dataset: DataSets, plot_pred=True, plot_dis=True):
+def run(model, config_init, config_train, dataset: DataSets, filename, plot_pred=True, plot_dis=False):
     x_train, x_test, y_train, y_test = dataset.get_data()
 
     model = getattr(model_zoo, model)(**config_init)
@@ -139,8 +151,12 @@ def run(model, config_init, config_train, dataset: DataSets, plot_pred=True, plo
 
     result_eval = evaluate(actual_invert, pred_mean, ["mae", 'smape', 'jsd'])
 
+    df = pd.DataFrame(np.concatenate([actual_invert, preds_invert], axis=1),
+                      columns=['actual'] + [f"predict{i}" for i in range(10)])
+    df.to_csv(filename + ".csv", index=False)
+
     if plot_pred:
-        plot_predict(actual_invert, pred_mean, pred_std, title=str(result_eval), path=None)
+        plot_predict(actual_invert, pred_mean, pred_std, title=str(result_eval), path=filename)
     if plot_dis:
         plot_distribution(actual_invert, pred_mean, title=str(result_eval), path=None)
     return result_eval['mae']
@@ -155,8 +171,8 @@ def plot_predict(actual, pred_mean, pred_std, title=None, path=None):
     pred_upper_80 = pred_mean + 1.28 * pred_std
     pred_lower_80 = pred_mean - 1.28 * pred_std
 
-    plt.fill_between(range(len(pred_mean)), pred_lower_95, pred_upper_95, alpha=0.5, label='interval 95%')
-    plt.fill_between(range(len(pred_mean)), pred_lower_80, pred_upper_80, alpha=0.3, label='interval 80%')
+    plt.fill_between(range(len(pred_mean)), pred_lower_95, pred_upper_95, alpha=0.8, label='interval 95%')
+    plt.fill_between(range(len(pred_mean)), pred_lower_80, pred_upper_80, alpha=0.5, label='interval 80%')
 
     plt.plot(actual, label='actual', color='#f48024')
     plt.plot(pred_mean, label='predict', color='green')
@@ -164,7 +180,7 @@ def plot_predict(actual, pred_mean, pred_std, title=None, path=None):
     if title is not None:
         plt.title(title)
     if path is not None:
-        plt.savefig(path, dpi=300, format='pdf')
+        plt.savefig(path+".pdf", dpi=300, format='pdf')
     else:
         plt.show()
 

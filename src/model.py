@@ -145,11 +145,11 @@ class GanModel(Model):
         if self.is_wgan:
             self._loss_g, self._loss_d = self._loss_wgan(d_fake, d_real)
         else:
-            # self._loss_g, self._loss_d = self._loss_gan(d_fake, d_real)
+            self._loss_g, self._loss_d = self._loss_gan(d_fake, d_real)
             # self._loss_g = tf.Print(self._loss_g, [self._loss_g], message="loss_g before")
             # self._loss_g += tf.losses.mean_squared_error(self._y, self._pred)
             # self._loss_g = tf.Print(self._loss_g, [self._loss_g], message="loss_g after")
-            self._loss_g, self._loss_d = self.custom_loss(d_fake, d_real, predicts, self._y)
+            # self._loss_g, self._loss_d = self.custom_loss(d_fake, d_real, predicts, self._y)
 
         d_vars, self._train_d = self._train_op(self._loss_d, self.optimizer_d, scope='discriminator')
         g_vars, self._train_g = self._train_op(self._loss_g, self.optimizer_g, scope='generator')
