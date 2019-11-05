@@ -33,7 +33,7 @@ class Particle:
         result = []
         for i, t in enumerate(self.type_attr):
             if t == 'discrete':
-                result.append(self.range_val[i][int(position[i])])  # FIXME: error index out of range
+                result.append(self.range_val[i][int(position[i])])
             else:
                 result.append(position[i])
 
