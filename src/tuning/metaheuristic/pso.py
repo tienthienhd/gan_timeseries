@@ -33,7 +33,7 @@ class Particle:
         result = []
         for i, t in enumerate(self.type_attr):
             if t == 'discrete':
-                result.append(self.range_val[i][int(position[i])])
+                result.append(self.range_val[i][int(position[i])])  # FIXME: error index out of range
             else:
                 result.append(position[i])
 
@@ -85,7 +85,7 @@ class PSO:
             type_attr.append(attr['type'])
             if attr['type'] == 'discrete':
                 min_val.append(0)
-                max_val.append(len(attr['domain']))
+                max_val.append(len(attr['domain'])-1)
             elif attr['type'] == 'continuous':
                 min_val.append(attr['domain'][0])
                 max_val.append(attr['domain'][1])
