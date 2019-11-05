@@ -34,7 +34,7 @@ def fitness_function(param):
     n_in = int(param[0])
     n_out = 1
 
-    data = DataSets("../../data/gg_trace/5.csv",
+    data = DataSets("../../../data/gg_trace/5.csv",
                     usecols=[3],
                     column_names=['cpu'],
                     header=None,
@@ -141,6 +141,9 @@ def run(model, config_init, config_train, dataset: DataSets, filename, plot_pred
     preds_invert = []
     for pred in preds:
         preds_invert.append(dataset.invert_transform(pred))
+
+    model.close_session()
+    del model
 
     preds_invert = np.concatenate(preds_invert, axis=1)
     pred_mean = np.mean(preds_invert, axis=1)
