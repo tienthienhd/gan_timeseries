@@ -186,6 +186,7 @@ def plot_predict(actual, pred_mean, pred_std, title=None, path=None):
         plt.savefig(path+".pdf", dpi=300, format='pdf')
     else:
         plt.show()
+    plt.close()
 
 
 def plot_distribution(actual, predict, title=None, path=None):
@@ -199,6 +200,7 @@ def plot_distribution(actual, predict, title=None, path=None):
         plt.savefig(path, dpi=300, format='pdf')
     else:
         plt.show()
+    plt.close()
 
 
 if __name__ == '__main__':
