@@ -201,5 +201,12 @@ def plot_distribution(actual, predict, title=None, path=None):
         plt.show()
 
 
+def custom_fitness(params):
+    res = []
+    for param in params:
+        res.append(fitness_function(param))
+    return res
+
+
 if __name__ == '__main__':
     print(fitness_function(template_param))
