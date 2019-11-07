@@ -129,7 +129,7 @@ class PSO:
 
                 # determine if current particle is the best (globally)
                 if particle.err < self.err_best_g or self.err_best_g == -1:
-                    self.pos_best_g = particle.position
+                    self.pos_best_g = particle.position.copy()
                     self.err_best_g = particle.err
 
             # cycle through warm and update velocities and position
@@ -198,12 +198,12 @@ if __name__ == '__main__':
     a.run(100)
 
     # from tuning.metaheuristic.function_utils import *
-    # a = PSO(C30, domain, 1000)
+    # a = PSO(fitness, domain, 10)
     # a.run(300)
 
     # def test(input_x):
     #     return C30(input_x[0])
-    #
+
     # from GPyOpt.methods import BayesianOptimization
     #
     # bayes = BayesianOptimization(test, domain, initial_design_numdata=100, num_cores=-1)

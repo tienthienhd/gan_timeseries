@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from metrics import evaluate
 import model_zoo
+import gc
 
 __all__ = [
     "fitness_function"
@@ -124,7 +125,10 @@ def fitness_function(param):
             for k1, v1 in v.items():
                 filename += "{}_".format(v1)
 
-    return run(model_name, config_init, config_train, data, filename)
+    res = run(model_name, config_init, config_train, data, filename)
+    del data
+    gc.collect()
+    return res
 
 
 def run(model, config_init, config_train, dataset: DataSets, filename, plot_pred=True, plot_dis=False):
@@ -143,7 +147,6 @@ def run(model, config_init, config_train, dataset: DataSets, filename, plot_pred
         preds_invert.append(dataset.invert_transform(pred))
 
     model.close_session()
-    del model
 
     preds_invert = np.concatenate(preds_invert, axis=1)
     pred_mean = np.mean(preds_invert, axis=1)
@@ -162,6 +165,7 @@ def run(model, config_init, config_train, dataset: DataSets, filename, plot_pred
         plot_predict(actual_invert, pred_mean, pred_std, title=str(result_eval), path=filename)
     if plot_dis:
         plot_distribution(actual_invert, pred_mean, title=str(result_eval), path=None)
+    del model, preds_invert, pred_mean, pred_std, df, dataset
     return result_eval['mae']
 
 
@@ -183,7 +187,7 @@ def plot_predict(actual, pred_mean, pred_std, title=None, path=None):
     if title is not None:
         plt.title(title)
     if path is not None:
-        plt.savefig(path+".pdf", dpi=300, format='pdf')
+        plt.savefig(path+".svg", dpi=300, format='svg')
     else:
         plt.show()
     plt.clf()
@@ -198,7 +202,7 @@ def plot_distribution(actual, predict, title=None, path=None):
     if title is not None:
         plt.title(title)
     if path is not None:
-        plt.savefig(path, dpi=300, format='pdf')
+        plt.savefig(path, dpi=300, format='svg')
     else:
         plt.show()
     plt.clf()

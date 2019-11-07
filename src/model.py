@@ -120,7 +120,7 @@ class GanModel(Model):
         self._x = tf.placeholder(tf.float32, [None] + self.input_shape, 'x')
         self._z = tf.placeholder(tf.float32, [self.n_gen, None] + self.noise_shape, 'noise')
 
-        # self._pred = self.generator(x=self._x, z=self._z)
+        # self._pred = self.generator(x=self._x, z=self._z[0])
         # self._pred = tf.reshape(self._pred, [-1] + self.output_shape)
 
         predicts = []
@@ -145,11 +145,11 @@ class GanModel(Model):
         if self.is_wgan:
             self._loss_g, self._loss_d = self._loss_wgan(d_fake, d_real)
         else:
-            self._loss_g, self._loss_d = self._loss_gan(d_fake, d_real)
+            # self._loss_g, self._loss_d = self._loss_gan(d_fake, d_real)
             # self._loss_g = tf.Print(self._loss_g, [self._loss_g], message="loss_g before")
             # self._loss_g += tf.losses.mean_squared_error(self._y, self._pred)
             # self._loss_g = tf.Print(self._loss_g, [self._loss_g], message="loss_g after")
-            # self._loss_g, self._loss_d = self.custom_loss(d_fake, d_real, predicts, self._y)
+            self._loss_g, self._loss_d = self.custom_loss(d_fake, d_real, self._pred, self._y)
 
         d_vars, self._train_d = self._train_op(self._loss_d, self.optimizer_d, scope='discriminator')
         g_vars, self._train_g = self._train_op(self._loss_g, self.optimizer_g, scope='generator')
@@ -175,14 +175,13 @@ class GanModel(Model):
         loss_g = -tf.reduce_mean(d_fake)
         return loss_g, loss_d
 
-    def custom_loss(self, d_fake, d_real, predicts, actual):
+    def custom_loss(self, d_fake, d_real, mean_predict, actual):
         loss_g_gan, loss_d_gan = self._loss_gan(d_fake, d_real)
-        mean_predict = tf.math.reduce_mean(predicts, axis=0)
-        std_predict = tf.math.reduce_std(predicts, axis=0)
+        # std_predict = tf.math.reduce_std(predicts, axis=0)
 
         loss_regression = tf.losses.mean_squared_error(actual, mean_predict)
-        loss_std = tf.reduce_mean(tf.square(std_predict))
-        return loss_g_gan + loss_regression + loss_std, loss_d_gan
+        # loss_std = tf.reduce_mean(tf.square(std_predict))
+        return loss_g_gan + loss_regression, loss_d_gan
 
     def _train_op(self, loss, optimizer, scope):
         var_list = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=scope)
