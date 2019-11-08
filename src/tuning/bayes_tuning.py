@@ -4,65 +4,7 @@ import numpy as np
 import os
 import multiprocessing as mp
 from GPyOpt.methods import BayesianOptimization
-
-from data import DataSets
-
-
-def fitness_single(param):
-
-    dataset = DataSets('../data/gg_trace/5.csv',
-                       usecols=[3],
-                       column_names=['cpu'],
-                       header=None,
-                       n_in=int(param[0]),
-                       n_out=int(param[1]),
-                       is_diff=True,
-                       is_log=True,
-                       is_stand=True,
-                       feature_range=(-1, 1))
-    config_gru_gan = {
-        "params_generator": {
-            "layer_size": [int(param[2]), dataset.get_input_shape()[-1]],
-            "activation": 'tanh',
-            "dropout": param[3],
-            "output_activation": "tanh",
-            "cell_type": "gru",
-            "concat_noise": "after"
-
-        },
-        "params_discriminator": {
-            "layer_size": [int(param[4]), dataset.get_input_shape()[-1]],
-            "activation": 'tanh',
-            "dropout": param[5],
-            "output_activation": 'sigmoid',
-            "cell_type": "gru"
-
-        },
-        "input_shape": dataset.get_input_shape(),
-        "noise_shape": dataset.get_input_shape(),
-        "optimizer_g": 'rmsprop',
-        "optimizer_d": 'rmsprop',
-        "learning_rate_g": param[6],
-        "learning_rate_d": param[6],
-        "num_train_d": int(param[7]),
-        "is_wgan": False,
-        "model_dir": "logs/ann_gan"
-    }
-
-    config_train = {
-        "validation_split": 0.2,
-        "batch_size": int(param[8]),
-        # "batch_size": 2000,
-        "epochs": 200,
-        "verbose": 0,
-        "step_print": 1
-    }
-    return run.run('GruGan', config_init=config_gru_gan, config_train=config_train, dataset=dataset)
-
-
-def fitness(params):
-    res = fitness_single(params[0])
-    return res
+from tuning.function import custom_fitness
 
 
 if __name__ == '__main__':
@@ -90,7 +32,7 @@ if __name__ == '__main__':
     ]
     constraints = []
 
-    opt = BayesianOptimization(f=fitness,
+    opt = BayesianOptimization(f=custom_fitness,
                                domain=domain,
                                constraints=constraints,
                                num_cores=6,

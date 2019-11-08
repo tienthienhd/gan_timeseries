@@ -114,13 +114,14 @@ class GanModel(Model):
         self.num_train_d = num_train_d
         self.is_wgan = is_wgan
         self.n_gen = 10
+        self.c = 0.01
         super().__init__(model_dir)
 
     def _build_model(self):
         self._x = tf.placeholder(tf.float32, [None] + self.input_shape, 'x')
         self._z = tf.placeholder(tf.float32, [self.n_gen, None] + self.noise_shape, 'noise')
 
-        # self._pred = self.generator(x=self._x, z=self._z)
+        # self._pred = self.generator(x=self._x, z=self._z[0])
         # self._pred = tf.reshape(self._pred, [-1] + self.output_shape)
 
         predicts = []
@@ -130,7 +131,7 @@ class GanModel(Model):
             predicts.append(p)
 
         self._pred = tf.math.reduce_mean(predicts, axis=0)
-
+        # self._pred_std = tf.math.reduce_std(pred)
 
         self._y = tf.placeholder(tf.float32, self._pred.shape, 'y')
 
@@ -145,11 +146,11 @@ class GanModel(Model):
         if self.is_wgan:
             self._loss_g, self._loss_d = self._loss_wgan(d_fake, d_real)
         else:
-            self._loss_g, self._loss_d = self._loss_gan(d_fake, d_real)
+            # self._loss_g, self._loss_d = self._loss_gan(d_fake, d_real)
             # self._loss_g = tf.Print(self._loss_g, [self._loss_g], message="loss_g before")
             # self._loss_g += tf.losses.mean_squared_error(self._y, self._pred)
             # self._loss_g = tf.Print(self._loss_g, [self._loss_g], message="loss_g after")
-            # self._loss_g, self._loss_d = self.custom_loss(d_fake, d_real, predicts, self._y)
+            self._loss_g, self._loss_d = self.custom_loss(d_fake, d_real, predicts, self._y)
 
         d_vars, self._train_d = self._train_op(self._loss_d, self.optimizer_d, scope='discriminator')
         g_vars, self._train_g = self._train_op(self._loss_g, self.optimizer_g, scope='generator')
