@@ -72,7 +72,7 @@ def run_test(model, config_init, config_train, dataset: DataSets):
     plt.figure()
     preds = []
     pred_raw = []
-    for i in range(1):
+    for i in range(10):
         pred = model.predict(x_test)
         # print(pred.shape)
         pred = np.reshape(pred, (-1, y_test.shape[-1]))
@@ -90,11 +90,7 @@ def run_test(model, config_init, config_train, dataset: DataSets):
     pred_raw = np.expand_dims(pred_raw, axis=1)
     plt.plot(pred_raw, label='predict')
 
-
-
     plt.legend()
-
-
 
     pred_concat = np.concatenate(preds, axis=1)
     pred = pred_concat.mean(axis=1)

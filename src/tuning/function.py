@@ -115,7 +115,7 @@ def fitness_function(param):
         "step_print": step_print
     }
 
-    filename = "/home/tienthien/Desktop/Mine/gan_timeseries/logs/tuning/gru_gan/"
+    filename = "logs/pso/"
     for k, v in config_init.items():
         if k == 'model_dir':
             continue

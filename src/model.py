@@ -114,6 +114,7 @@ class GanModel(Model):
         self.num_train_d = num_train_d
         self.is_wgan = is_wgan
         self.n_gen = 10
+        self.c = 0.01
         super().__init__(model_dir)
 
     def _build_model(self):
@@ -130,7 +131,7 @@ class GanModel(Model):
             predicts.append(p)
 
         self._pred = tf.math.reduce_mean(predicts, axis=0)
-
+        # self._pred_std = tf.math.reduce_std(pred)
 
         self._y = tf.placeholder(tf.float32, self._pred.shape, 'y')
 
