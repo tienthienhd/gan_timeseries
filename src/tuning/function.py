@@ -8,7 +8,8 @@ import model_zoo
 import gc
 
 __all__ = [
-    "fitness_function"
+    "fitness_function",
+    "custom_fitness"
 ]
 
 template_space = [
@@ -29,13 +30,12 @@ template_param = [1, 2, 0.3, 2, 0.1, 0.001, 0.001, 1, 1000]
 
 
 def fitness_function(param):
-    print("RUN PARAM:", param)
     model_name = "GruGan"
 
     n_in = int(param[0])
     n_out = 1
 
-    data = DataSets("../../../data/gg_trace/5.csv",
+    data = DataSets("data/gg_trace/5.csv",
                     usecols=[3],
                     column_names=['cpu'],
                     header=None,
@@ -62,17 +62,17 @@ def fitness_function(param):
 
     input_shape = data.get_input_shape()
     output_shape = data.get_output_shape()
-    noise_shape = data.get_input_shape()
+    noise_shape = [32, 1]
     optimizer_g = 'adam'
     optimizer_d = 'adam'
-    learning_rate_g = param[5]
-    learning_rate_d = param[6]
-    num_train_d = int(param[7])
+    learning_rate_g = 0.004  #param[5]
+    learning_rate_d = 0.01  #param[6]
+    num_train_d = int(param[6])
     is_wgan = False
     model_dir = 'logs/gan/'
 
     validation_split = 0.2
-    batch_size = int(param[8])
+    batch_size = int(param[6])
     epochs = 10
     verbose = 0
     step_print = 1
@@ -115,7 +115,7 @@ def fitness_function(param):
         "step_print": step_print
     }
 
-    filename = "logs/pso/"
+    filename = "logs/tuning/gru_gan/"
     for k, v in config_init.items():
         if k == 'model_dir':
             continue
@@ -128,6 +128,7 @@ def fitness_function(param):
     res = run(model_name, config_init, config_train, data, filename)
     del data
     gc.collect()
+    print("RUN PARAM: {} - {}".format(res, param))
     return res
 
 

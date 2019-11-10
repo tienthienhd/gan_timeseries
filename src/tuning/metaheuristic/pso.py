@@ -155,46 +155,23 @@ if __name__ == '__main__':
         return total
 
 
-    domain = [
-        {'name': 'x1', 'type': 'continuous', 'domain': (-100, 100)},
-        {'name': 'x2', 'type': 'continuous', 'domain': (-100, 100)},
-        {'name': 'x3', 'type': 'continuous', 'domain': (-100, 100)},
-        {'name': 'x4', 'type': 'continuous', 'domain': (-100, 100)},
-        {'name': 'x5', 'type': 'continuous', 'domain': (-100, 100)},
-        {'name': 'x6', 'type': 'continuous', 'domain': (-100, 100)},
-        {'name': 'x7', 'type': 'continuous', 'domain': (-100, 100)},
-        {'name': 'x8', 'type': 'continuous', 'domain': (-100, 100)},
-        # {'name': 'x9', 'type': 'continuous', 'domain': (-100, 100)},
-        # {'name': 'x10', 'type': 'continuous', 'domain': (-100, 100)},
-        # {'name': 'x11', 'type': 'continuous', 'domain': (-100, 100)},
-        # {'name': 'x12', 'type': 'continuous', 'domain': (-100, 100)},
-        # {'name': 'x13', 'type': 'continuous', 'domain': (-100, 100)},
-        # {'name': 'x14', 'type': 'continuous', 'domain': (-100, 100)},
-        # {'name': 'x15', 'type': 'continuous', 'domain': (-100, 100)},
-        # {'name': 'x16', 'type': 'continuous', 'domain': (-100, 100)},
-        # {'name': 'x17', 'type': 'continuous', 'domain': (-100, 100)},
-        # {'name': 'x18', 'type': 'continuous', 'domain': (-100, 100)},
-        # {'name': 'x19', 'type': 'continuous', 'domain': (-100, 100)},
-        # {'name': 'x20', 'type': 'continuous', 'domain': (-100, 100)},
-    ]
+    # domain = [
+    #     {'name': 'x1', 'type': 'continuous', 'domain': (-100, 100)},
+    #     {'name': 'x2', 'type': 'continuous', 'domain': (-100, 100)},
+    #     {'name': 'x3', 'type': 'continuous', 'domain': (-100, 100)},
+    #     {'name': 'x4', 'type': 'continuous', 'domain': (-100, 100)},
+    #     {'name': 'x5', 'type': 'continuous', 'domain': (-100, 100)},
+    #     {'name': 'x6', 'type': 'continuous', 'domain': (-100, 100)},
+    #     {'name': 'x7', 'type': 'continuous', 'domain': (-100, 100)},
+    #     {'name': 'x8', 'type': 'continuous', 'domain': (-100, 100)},
+    #
+    # ]
 
-    template_space = [
-        {'name': 'n_in', 'type': 'discrete', 'domain': [1, 2, 3, 4, 5, 6, 7, 8]},
-        {'name': 'g_layer_size', 'type': 'discrete', 'domain': [2, 4, 8, 16, 32, 64]},
-        {'name': 'g_dropout', 'type': 'continuous', 'domain': (0, 0.5)},
-
-        {'name': 'd_layer_size', 'type': 'discrete', 'domain': [2, 4, 8, 16, 32, 64]},
-        {'name': 'd_dropout', 'type': 'continuous', 'domain': (0, 0.5)},
-        {'name': 'learning_rate', 'type': 'continuous', 'domain': (0.0001, 0.1)},
-        {'name': 'learning_rate', 'type': 'continuous', 'domain': (0.0001, 0.1)},
-        {'name': 'num_train_d', 'type': 'discrete', 'domain': [1, 2, 3, 4, 5]},
-        {'name': 'batch_size', 'type': 'discrete', 'domain': [4, 8, 16, 32]},
-
-    ]
+    from tuning.config import domain
 
     from tuning.function import fitness_function
 
-    a = PSO(fitness_function, template_space, num_particles=30)
+    a = PSO(fitness_function, domain, num_particles=20)
     a.run(100)
 
     # from tuning.metaheuristic.function_utils import *

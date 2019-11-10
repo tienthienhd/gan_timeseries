@@ -1,12 +1,19 @@
-from data import DataSets
+import sys
+sys.path.append("src/")
 import run
+from data import DataSets
 
 if __name__ == '__main__':
+    import src.tuning.bayes_tuning
+    #
+    # import src.tuning.metaheuristic.pso_lib
+
+def test():
     dataset = DataSets('data/gg_trace/5.csv',
                        usecols=[3],
                        column_names=['cpu'],
                        header=None,
-                       n_in=1,
+                       n_in=4,
                        n_out=1,
                        is_diff=True,
                        is_log=True,
@@ -23,7 +30,6 @@ if __name__ == '__main__':
 
         },
         "input_shape": dataset.get_input_shape(),
-        "output_shape": dataset.get_output_shape(),
         "optimizer": 'adam',
         "learning_rate": 0.001,
         "model_dir": "test"
@@ -37,8 +43,6 @@ if __name__ == '__main__':
 
         },
         "input_shape": dataset.get_input_shape(),
-        "output_shape": dataset.get_output_shape(),
-
         "optimizer": 'adam',
         "learning_rate": 0.001,
         "model_dir": "test"
@@ -59,7 +63,6 @@ if __name__ == '__main__':
 
         },
         "input_shape": dataset.get_input_shape(),
-        "output_shape": dataset.get_output_shape(),
         "noise_shape": [1, 1],
         "optimizer_g": 'adam',
         "optimizer_d": 'adam',
@@ -72,24 +75,23 @@ if __name__ == '__main__':
 
     config_ann_gan = {
         "params_generator": {
-            "layer_size": [32, dataset.get_input_shape()[-1]],
-            "activation": 'tanh',
+            "layer_size": [8, dataset.get_input_shape()[-1]],
+            "activation": 'sigmoid',
             "dropout": 0,
-            "output_activation": "tanh"
+            "output_activation": None
 
         },
         "params_discriminator": {
             "layer_size": [16, dataset.get_input_shape()[-1]],
-            "activation": 'tanh',
+            "activation": 'sigmoid',
             "dropout": 0,
             "output_activation": 'sigmoid'
 
         },
         "input_shape": dataset.get_input_shape(),
-        "output_shape": dataset.get_output_shape(),
         "noise_shape": dataset.get_input_shape(),
-        "optimizer_g": 'adam',
-        "optimizer_d": 'adam',
+        "optimizer_g": 'rmsprop',
+        "optimizer_d": 'rmsprop',
         "learning_rate_g": 0.001,
         "learning_rate_d": 0.001,
         "num_train_d": 2,
@@ -116,7 +118,7 @@ if __name__ == '__main__':
         },
         "input_shape": dataset.get_input_shape(),
         "output_shape": dataset.get_output_shape(),
-        "noise_shape": [64, 1],
+        "noise_shape": [32, 1],
         "optimizer_g": 'rmsprop',
         "optimizer_d": 'rmsprop',
         "learning_rate_g": 0.01,
@@ -149,13 +151,5 @@ if __name__ == '__main__':
         "verbose": 1,
         "step_print": 1
     }
-    model = {
-        "AnnGan": config_ann_gan,
-        "AnnModel": config_ann,
-        "GruModel": config_gru,
-        "GruGan": config_gru_gan
-    }
-
-    name_model = 'GruGan'
-    run.run_test(name_model, config_init=model[name_model], config_train=config_train,
+    run.run_test('GruGan', config_init=config_gru_gan, config_train=config_train,
                  dataset=dataset)
