@@ -6,6 +6,7 @@ import seaborn as sns
 from metrics import evaluate
 import model_zoo
 import gc
+import os
 
 __all__ = [
     "fitness_function",
@@ -19,23 +20,29 @@ template_space = [
 
     {'name': 'd_layer_size', 'type': 'discrete', 'domain': [2, 4, 8, 16, 32, 64]},
     {'name': 'd_dropout', 'type': 'continuous', 'domain': (0, 0.8)},
-    {'name': 'learning_rate', 'type': 'continuous', 'domain': (0.0001, 0.1)},
-    {'name': 'learning_rate', 'type': 'continuous', 'domain': (0.0001, 0.1)},
+    # {'name': 'learning_rate', 'type': 'continuous', 'domain': (0.0001, 0.1)},
+    # {'name': 'learning_rate', 'type': 'continuous', 'domain': (0.0001, 0.1)},
     {'name': 'num_train_d', 'type': 'discrete', 'domain': [1, 2, 3, 4, 5]},
     {'name': 'batch_size', 'type': 'discrete', 'domain': [4, 8, 16, 32]},
 
 ]
 
-template_param = [1, 2, 0.3, 2, 0.1, 0.001, 0.001, 1, 1000]
+template_param = [1, 2, 0.3, 2, 0.1, 1, 1000]
 
 
 def fitness_function(param):
     model_name = "GruGan"
+    data_set = "gg_trace"
+    sub_data_set = 5
+    data_path = f"data/{data_set}/{sub_data_set}.csv"
+    folder_save = f"result/tuning/{model_name}/{data_set}/{sub_data_set}/"
+    if not os.path.exists(folder_save):
+        os.makedirs(folder_save, exist_ok=True)
 
     n_in = int(param[0])
     n_out = 1
 
-    data = DataSets("data/gg_trace/5.csv",
+    data = DataSets(data_path,
                     usecols=[3],
                     column_names=['cpu'],
                     header=None,
@@ -49,14 +56,14 @@ def fitness_function(param):
 
     layer_size_g = int(param[1])
     activation_g = 'tanh'
-    dropout_g = param[2]
+    dropout_g = round(param[2], 3)
     output_activation_g = 'tanh'
     cell_type_g = 'gru'
     concat_noise = 'after'
 
     layer_size_d = int(param[3])
     activation_d = 'tanh'
-    dropout_d = param[4]
+    dropout_d = round(param[4], 3)
     output_activation_d = 'sigmoid'
     cell_type_d = 'gru'
 
@@ -72,8 +79,8 @@ def fitness_function(param):
     model_dir = 'logs/gan/'
 
     validation_split = 0.2
-    batch_size = int(param[6])
-    epochs = 10
+    batch_size = 1000
+    epochs = 1
     verbose = 0
     step_print = 1
 
@@ -115,15 +122,15 @@ def fitness_function(param):
         "step_print": step_print
     }
 
-    filename = "logs/tuning/gru_gan/"
+    filename = folder_save
     for k, v in config_init.items():
         if k == 'model_dir':
             continue
         if not isinstance(v, dict):
-            filename += "{}_".format(v)
+            filename += "{}-{}_".format(k[:2], v)
         else:
             for k1, v1 in v.items():
-                filename += "{}_".format(v1)
+                filename += "{}-{}_".format(k1[:2], v1)
 
     res = run(model_name, config_init, config_train, data, filename)
     del data
@@ -217,5 +224,5 @@ def custom_fitness(params):
     return res
 
 
-if __name__ == '__main__':
+def test():
     print(fitness_function(template_param))
