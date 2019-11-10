@@ -146,7 +146,8 @@ def run(model, config_init, config_train, dataset: DataSets, filename, plot_pred
     model.fit(x_train, y_train, **config_train)
 
     preds = []
-    for i in range(100):
+    num_predict = 100
+    for i in range(num_predict):
         pred = np.reshape(model.predict(x_test), (-1, y_test.shape[-1]))
         preds.append(pred)
 
@@ -167,7 +168,7 @@ def run(model, config_init, config_train, dataset: DataSets, filename, plot_pred
 
     if filename is not None:
         df = pd.DataFrame(np.concatenate([actual_invert, preds_invert], axis=1),
-                          columns=['actual'] + [f"predict{i}" for i in range(10)])
+                          columns=['actual'] + [f"predict{i}" for i in range(num_predict)])
         df.to_csv(filename + ".csv", index=False)
 
     if plot_pred:
