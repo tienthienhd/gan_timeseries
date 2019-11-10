@@ -33,7 +33,7 @@ template_param = [1, 2, 0.3, 2, 0.1, 1, 1000]
 def fitness_function(param):
     model_name = "GruGan"
     data_set = "gg_trace"
-    sub_data_set = 5
+    sub_data_set = "5"
     data_path = f"data/{data_set}/{sub_data_set}.csv"
     folder_save = f"result/tuning/{model_name}/{data_set}/{sub_data_set}/"
     if not os.path.exists(folder_save):
@@ -146,7 +146,7 @@ def run(model, config_init, config_train, dataset: DataSets, filename, plot_pred
     model.fit(x_train, y_train, **config_train)
 
     preds = []
-    for i in range(10):
+    for i in range(100):
         pred = np.reshape(model.predict(x_test), (-1, y_test.shape[-1]))
         preds.append(pred)
 
@@ -165,15 +165,16 @@ def run(model, config_init, config_train, dataset: DataSets, filename, plot_pred
 
     result_eval = evaluate(actual_invert, pred_mean, ["mae", 'smape', 'jsd'])
 
-    df = pd.DataFrame(np.concatenate([actual_invert, preds_invert], axis=1),
-                      columns=['actual'] + [f"predict{i}" for i in range(10)])
-    df.to_csv(filename + ".csv", index=False)
+    if filename is not None:
+        df = pd.DataFrame(np.concatenate([actual_invert, preds_invert], axis=1),
+                          columns=['actual'] + [f"predict{i}" for i in range(10)])
+        df.to_csv(filename + ".csv", index=False)
 
     if plot_pred:
         plot_predict(actual_invert, pred_mean, pred_std, title=str(result_eval), path=filename)
     if plot_dis:
         plot_distribution(actual_invert, pred_mean, title=str(result_eval), path=None)
-    del model, preds_invert, pred_mean, pred_std, df, dataset
+    del model, preds_invert, pred_mean, pred_std, dataset
     return result_eval['mae']
 
 

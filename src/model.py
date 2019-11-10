@@ -66,7 +66,7 @@ class Model:
                     print(result_eval)
 
     def predict(self, x):
-        return self._step_batch(x, mode='predict')
+        return self._step_batch(x, mode='predict', batch_size=len(x))
 
     def evaluate(self, x, y):
         pred = self.predict(x)
@@ -115,22 +115,25 @@ class GanModel(Model):
         self.is_wgan = is_wgan
         self.n_gen = 10
         self.c = 0.01
+        self.alpha = 1
+        self.beta = 1
+        self.gama = 1
         super().__init__(model_dir)
 
     def _build_model(self):
         self._x = tf.placeholder(tf.float32, [None] + self.input_shape, 'x')
         self._z = tf.placeholder(tf.float32, [self.n_gen, None] + self.noise_shape, 'noise')
 
-        # self._pred = self.generator(x=self._x, z=self._z[0])
-        # self._pred = tf.reshape(self._pred, [-1] + self.output_shape)
+        self._pred = self.generator(x=self._x, z=self._z[0])
+        self._pred = tf.reshape(self._pred, [-1] + self.output_shape)
 
-        predicts = []
-        for i in range(self.n_gen):
-            p = self.generator(x=self._x, z=self._z[i])
-            p = tf.reshape(p, [-1] + self.output_shape)
-            predicts.append(p)
+        # predicts = []
+        # for i in range(self.n_gen):
+        #     p = self.generator(x=self._x, z=self._z[i])
+        #     p = tf.reshape(p, [-1] + self.output_shape)
+        #     predicts.append(p)
 
-        self._pred = tf.math.reduce_mean(predicts, axis=0)
+        # self._pred = tf.math.reduce_mean(predicts, axis=0)
         # self._pred_std = tf.math.reduce_std(pred)
 
         self._y = tf.placeholder(tf.float32, self._pred.shape, 'y')
@@ -146,11 +149,12 @@ class GanModel(Model):
         if self.is_wgan:
             self._loss_g, self._loss_d = self._loss_wgan(d_fake, d_real)
         else:
-            # self._loss_g, self._loss_d = self._loss_gan(d_fake, d_real)
+            self._loss_g, self._loss_d = self._loss_gan(d_fake, d_real)
             # self._loss_g = tf.Print(self._loss_g, [self._loss_g], message="loss_g before")
             # self._loss_g += tf.losses.mean_squared_error(self._y, self._pred)
             # self._loss_g = tf.Print(self._loss_g, [self._loss_g], message="loss_g after")
-            self._loss_g, self._loss_d = self.custom_loss(d_fake, d_real, self._pred, self._y)
+            # self._loss_g, self._loss_d = self._loss_gan_re(d_fake, d_real, self._pred, self._y)
+            # self._loss_g, self._loss_d = self._loss_gan_re_s(d_fake, d_real, self._pred, self._y, self._x[:, -1, 0])
 
         d_vars, self._train_d = self._train_op(self._loss_d, self.optimizer_d, scope='discriminator')
         g_vars, self._train_g = self._train_op(self._loss_g, self.optimizer_g, scope='generator')
@@ -176,13 +180,20 @@ class GanModel(Model):
         loss_g = -tf.reduce_mean(d_fake)
         return loss_g, loss_d
 
-    def custom_loss(self, d_fake, d_real, mean_predict, actual):
+    def _loss_gan_re(self, d_fake, d_real, predict, real):
         loss_g_gan, loss_d_gan = self._loss_gan(d_fake, d_real)
         # std_predict = tf.math.reduce_std(predicts, axis=0)
 
-        loss_regression = tf.losses.mean_squared_error(actual, mean_predict)
+        loss_regression = tf.losses.mean_squared_error(real, predict)
         # loss_std = tf.reduce_mean(tf.square(std_predict))
-        return loss_g_gan + loss_regression, loss_d_gan
+        return self.alpha * loss_g_gan + self.beta * loss_regression, loss_d_gan
+
+    def _loss_gan_re_s(self, d_fake, d_real, predict, real, xt):
+        loss_g_gan, loss_d_gan = self._loss_gan(d_fake, d_real)
+        loss_regression = tf.losses.mean_squared_error(real, predict)
+        loss_sig = tf.abs(tf.sign(predict - xt) - tf.sign(real - xt))
+        # loss_std = tf.reduce_mean(tf.square(std_predict))
+        return self.alpha * loss_g_gan + self.beta * loss_regression + self.gama * loss_sig, loss_d_gan
 
     def _train_op(self, loss, optimizer, scope):
         var_list = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=scope)
