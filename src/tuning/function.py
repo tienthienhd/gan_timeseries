@@ -74,13 +74,13 @@ def fitness_function(param):
     optimizer_d = 'adam'
     learning_rate_g = 0.004  #param[5]
     learning_rate_d = 0.01  #param[6]
-    num_train_d = int(param[6])
+    num_train_d = int(param[5])
     is_wgan = False
     model_dir = 'logs/gan/'
 
     validation_split = 0.2
-    batch_size = 1000
-    epochs = 1
+    batch_size = int(param[6])
+    epochs = 20
     verbose = 0
     step_print = 1
 
