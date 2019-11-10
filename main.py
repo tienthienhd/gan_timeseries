@@ -2,11 +2,12 @@ import sys
 sys.path.append("src/")
 import run
 from data import DataSets
+from tuning import function
 
-if __name__ == '__main__':
+def run_tuning():
     import src.tuning.bayes_tuning
-    #
     # import src.tuning.metaheuristic.pso_lib
+
 
 def test():
     dataset = DataSets('data/gg_trace/5.csv',
@@ -145,11 +146,15 @@ def test():
     }
 
     config_train = {
-        "validation_split": 0.2,
+        "validation_split": 0.1,
         "batch_size": 8,
         "epochs": 2,
         "verbose": 1,
         "step_print": 1
     }
-    run.run_test('GruGan', config_init=config_gru_gan, config_train=config_train,
-                 dataset=dataset)
+    function.run('GruGan', config_init=config_gru_gan, config_train=config_train,
+                 dataset=dataset, filename=None)
+
+
+if __name__ == '__main__':
+    run_tuning()
