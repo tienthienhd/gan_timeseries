@@ -166,9 +166,9 @@ def test():
         "input_shape": dataset.get_input_shape(),
         "output_shape": dataset.get_output_shape(),
         "noise_shape": [32, 1],
-        "optimizer_g": 'rmsprop',
-        "optimizer_d": 'rmsprop',
-        "learning_rate_g": 0.01,
+        "optimizer_g": 'adam',
+        "optimizer_d": 'adam',
+        "learning_rate_g": 0.001,
         "learning_rate_d": 0.01,
         "num_train_d": 2,
         "loss_type": "loss_gan_re_d",
@@ -193,7 +193,7 @@ def test():
     }
 
     config_train = {
-        "validation_split": 0.1,
+        "validation_split": 0.2,
         "batch_size": 8,
         "epochs": 2,
         "verbose": 1,

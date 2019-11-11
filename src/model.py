@@ -117,6 +117,7 @@ class GanModel(Model):
         self.is_wgan = is_wgan
         self.n_gen = 10
         self.c = 0.01
+        self._is_clip = False
         self.alpha = 1
         self.beta = 1
         self.gama = 1
@@ -163,7 +164,7 @@ class GanModel(Model):
         d_vars, self._train_d = self._train_op(self._loss_d, self.optimizer_d, scope='discriminator')
         g_vars, self._train_g = self._train_op(self._loss_g, self.optimizer_g, scope='generator')
 
-        if self.is_wgan:
+        if self.is_wgan and self._is_clip:
             self.clip_d = [p.assign(tf.clip_by_value(p, -self.c, self.c)) for p in d_vars]
 
     def _loss_gan(self, d_fake, d_real):
@@ -211,7 +212,7 @@ class GanModel(Model):
             for i in range(self.num_train_d):
                 ld, _ = self.sess.run([self._loss_d, self._train_d],
                                       {self._x: x, self._z: self._get_noise(len(x)), self._y: y})
-                if self.is_wgan:
+                if self.is_wgan and self._is_clip:
                     self.sess.run(self.clip_d)
             lg, _ = self.sess.run([self._loss_g, self._train_g],
                                   {self._x: x, self._z: self._get_noise(len(x)), self._y: y})
