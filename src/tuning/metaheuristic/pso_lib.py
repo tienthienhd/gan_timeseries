@@ -12,7 +12,7 @@ min_x = np.array([1, 2, 0, 2, 0, 1, 4])
 max_x = np.array([8, 64, 0.5, 64, 0.5, 3, 32])
 bounds = (min_x, max_x)
 # Call instance of PSO
-optimizer = ps.single.GlobalBestPSO(n_particles=20,
+optimizer = ps.single.GlobalBestPSO(n_particles=30,
                                     dimensions=len(min_x),
                                     bounds=bounds,
                                     options=options)

@@ -51,6 +51,7 @@ class AnnGan(GanModel):
                  learning_rate_g,
                  learning_rate_d,
                  num_train_d,
+                 loss_type,
                  is_wgan=False,
                  model_dir='logs/ann_gan'):
         generator = DenseNet(params_generator, 'generator')
@@ -60,7 +61,7 @@ class AnnGan(GanModel):
         optimizer_d = utils.get_optimizer(optimizer_d, learning_rate_d)
 
         super().__init__(generator, discriminator, input_shape, output_shape, noise_shape, optimizer_g, optimizer_d,
-                         num_train_d,
+                         num_train_d, loss_type,
                          model_dir, is_wgan)
 
 
@@ -76,6 +77,7 @@ class FlnnGan(GanModel):
                  learning_rate_g,
                  learning_rate_d,
                  num_train_d,
+                 loss_type,
                  is_wgan=False,
                  model_dir='logs/ann_gan'):
         generator = FlnnNet(params_generator, 'generator')
@@ -85,7 +87,7 @@ class FlnnGan(GanModel):
         optimizer_d = utils.get_optimizer(optimizer_d, learning_rate_d)
 
         super().__init__(generator, discriminator, input_shape, output_shape, noise_shape, optimizer_g, optimizer_d,
-                         num_train_d,
+                         num_train_d, loss_type,
                          model_dir, is_wgan)
 
 
@@ -101,6 +103,7 @@ class GruGan(GanModel):
                  learning_rate_g,
                  learning_rate_d,
                  num_train_d,
+                 loss_type,
                  is_wgan=False,
                  model_dir='logs/ann_gan'):
         generator = RnnNet(params_generator, 'generator')
@@ -110,7 +113,7 @@ class GruGan(GanModel):
         optimizer_d = utils.get_optimizer(optimizer_d, learning_rate_d)
 
         super().__init__(generator, discriminator, input_shape, output_shape, noise_shape, optimizer_g, optimizer_d,
-                         num_train_d,
+                         num_train_d, loss_type,
                          model_dir, is_wgan)
 
 
@@ -126,6 +129,7 @@ class CustomModel(GanModel):
                  learning_rate_g,
                  learning_rate_d,
                  num_train_d,
+                 loss_type,
                  is_wgan=False,
                  model_dir='logs/ann_gan'):
         generator = CustomGenerativeNet(params_generator, 'generator')
@@ -135,5 +139,5 @@ class CustomModel(GanModel):
         optimizer_d = utils.get_optimizer(optimizer_d, learning_rate_d)
 
         super().__init__(generator, discriminator, input_shape, output_shape, noise_shape, optimizer_g, optimizer_d,
-                         num_train_d,
+                         num_train_d, loss_type,
                          model_dir, is_wgan)

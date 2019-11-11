@@ -13,8 +13,8 @@ from tuning.function import custom_fitness
 # activations = ['tanh', 'sigmoid', 'relu']
 # n_train_ds = [1, 2, 3, 4]
 
-model_tuning = "gru_gan"
-path_log = "logs/tuning/" + model_tuning
+model_tuning = "GruGan"
+path_log = "result/tuning/bayes/" + model_tuning
 
 domain = [
     {'name': 'n_in', 'type': 'discrete', 'domain': [1, 2, 3, 4, 5, 6, 7, 8]},
@@ -36,9 +36,9 @@ constraints = []
 opt = BayesianOptimization(f=custom_fitness,
                            domain=domain,
                            constraints=constraints,
-                           num_cores=6,
-                           batch_size=6,
-                           initial_design_numdata=20)
+                           num_cores=4,
+                           batch_size=4,
+                           initial_design_numdata=30)
 
 opt.run_optimization(max_iter=100, max_time=np.inf, verbosity=True,
                      report_file=os.path.join(path_log, 'report.txt'),

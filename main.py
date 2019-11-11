@@ -1,12 +1,56 @@
 import sys
+
 sys.path.append("src/")
 import run
 from data import DataSets
 from tuning import function
+import pandas as pd
+import numpy as np
+from metrics import evaluate
+import glob
+
 
 def run_tuning():
     import src.tuning.bayes_tuning
     # import src.tuning.metaheuristic.pso_lib
+
+
+def process_result():
+    result = []
+    for file in glob.glob("result/tuning/bayes/*/*/*/*.csv"):
+        res = get_info(file)
+        result.append(res)
+    df = pd.DataFrame(result)
+    df.to_csv("result/tuning/bayes/result_tuning.csv", index=False)
+
+
+def get_info(file_path):
+    tmp = file_path.split("/")
+    filename = tmp[-1]
+    sub_data = tmp[-2]
+    data = tmp[-3]
+    loss_type = tmp[-4]
+    algo = tmp[-5]
+    tuning_algo = tmp[-6]
+    df = pd.read_csv(file_path)
+    actual = df.iloc[:, 0].values
+
+    predicts = df.iloc[:, 1:].values
+    predict_mean = np.mean(predicts, axis=1)
+    predict_std = np.std(predicts, axis=1)
+    mean_std = np.mean(predict_std)
+    result = {
+        "filename": filename,
+        "data": data,
+        "sub_data": sub_data,
+        "algo": algo,
+        "loss_type": loss_type,
+        "tuning_algo": tuning_algo,
+        "mean_std": mean_std
+    }
+    res_eval = evaluate(actual, predict_mean, metrics=('mae', 'rmse', 'mape', 'smape', "std_ae", 'std_ape', "jsd"))
+    result.update(res_eval)
+    return result
 
 
 def test():
@@ -70,6 +114,7 @@ def test():
         "learning_rate_g": 0.001,
         "learning_rate_d": 0.001,
         "num_train_d": 1,
+        "loss_type": "loss_gan",
         "is_wgan": False,
         "model_dir": "logs/flnn_gan"
     }
@@ -96,6 +141,7 @@ def test():
         "learning_rate_g": 0.001,
         "learning_rate_d": 0.001,
         "num_train_d": 2,
+        "loss_type": "loss_gan",
         "is_wgan": False,
         "model_dir": "logs/ann_gan"
     }
@@ -125,6 +171,7 @@ def test():
         "learning_rate_g": 0.01,
         "learning_rate_d": 0.01,
         "num_train_d": 2,
+        "loss_type": "loss_gan_re_d",
         "is_wgan": False,
         "model_dir": "logs/ann_gan"
     }

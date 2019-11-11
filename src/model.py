@@ -102,13 +102,15 @@ class RegressionModel(Model):
 
 class GanModel(Model):
 
-    def __init__(self, generator, discriminator, input_shape, output_shape, noise_shape, optimizer_g, optimizer_d, num_train_d,
+    def __init__(self, generator, discriminator, input_shape, output_shape, noise_shape, optimizer_g, optimizer_d,
+                 num_train_d, loss_type,
                  model_dir, is_wgan=False):
         self.generator = generator
         self.discriminator = discriminator
         self.input_shape = input_shape
         self.output_shape = output_shape
         self.noise_shape = noise_shape
+        self.loss_type = loss_type
         self.optimizer_g = optimizer_g
         self.optimizer_d = optimizer_d
         self.num_train_d = num_train_d
@@ -149,12 +151,14 @@ class GanModel(Model):
         if self.is_wgan:
             self._loss_g, self._loss_d = self._loss_wgan(d_fake, d_real)
         else:
-            self._loss_g, self._loss_d = self._loss_gan(d_fake, d_real)
-            # self._loss_g = tf.Print(self._loss_g, [self._loss_g], message="loss_g before")
-            # self._loss_g += tf.losses.mean_squared_error(self._y, self._pred)
-            # self._loss_g = tf.Print(self._loss_g, [self._loss_g], message="loss_g after")
-            # self._loss_g, self._loss_d = self._loss_gan_re(d_fake, d_real, self._pred, self._y)
-            # self._loss_g, self._loss_d = self._loss_gan_re_s(d_fake, d_real, self._pred, self._y, self._x[:, -1, 0])
+            if self.loss_type == 'loss_gan':
+                self._loss_g, self._loss_d = self._loss_gan(d_fake, d_real)
+            elif self.loss_type == 'loss_gan_re':
+                self._loss_g, self._loss_d = self._loss_gan_re(d_fake, d_real, self._pred, self._y)
+            elif self.loss_type == 'loss_gan_re_d':
+                self._loss_g, self._loss_d = self._loss_gan_re_d(d_fake, d_real, self._pred, self._y, self._x[:, -1, 0])
+            else:
+                raise NotImplementedError("Please check input loss function")
 
         d_vars, self._train_d = self._train_op(self._loss_d, self.optimizer_d, scope='discriminator')
         g_vars, self._train_g = self._train_op(self._loss_g, self.optimizer_g, scope='generator')
@@ -188,7 +192,7 @@ class GanModel(Model):
         # loss_std = tf.reduce_mean(tf.square(std_predict))
         return self.alpha * loss_g_gan + self.beta * loss_regression, loss_d_gan
 
-    def _loss_gan_re_s(self, d_fake, d_real, predict, real, xt):
+    def _loss_gan_re_d(self, d_fake, d_real, predict, real, xt):
         loss_g_gan, loss_d_gan = self._loss_gan(d_fake, d_real)
         loss_regression = tf.losses.mean_squared_error(real, predict)
         loss_sig = tf.abs(tf.sign(predict - xt) - tf.sign(real - xt))
