@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-df = pd.read_csv("../data/gg_trace/data_full.csv", usecols=[0, 1, 3, 4], header=None)
+df = pd.read_csv("../data/wc98/wc98_workload_5min.csv", usecols=[1], header=0)
 df.plot()
 
 plt.show()
