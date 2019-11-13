@@ -36,8 +36,8 @@ constraints = []
 opt = BayesianOptimization(f=custom_fitness,
                            domain=domain,
                            constraints=constraints,
-                           num_cores=4,
-                           batch_size=4,
+                           num_cores=6,
+                           batch_size=6,
                            initial_design_numdata=30)
 
 opt.run_optimization(max_iter=100, max_time=np.inf, verbosity=True,
