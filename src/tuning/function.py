@@ -33,9 +33,9 @@ template_param = [1, 2, 0.3, 2, 0.1, 1, 1000]
 def fitness_function(param):
     tuning_model = "bayes"
     model_name = "GruGan"
-    loss_type = "loss_gan"
-    data_set = "gg_trace"
-    sub_data_set = "5_full"
+    loss_type = "loss_gan_re_d"
+    data_set = "wc98"
+    sub_data_set = "wc98_workload_5min"
     data_path = f"data/{data_set}/{sub_data_set}.csv"
     folder_save = f"result/tuning/{tuning_model}/{model_name}/{loss_type}/{data_set}/{sub_data_set}/"
     if not os.path.exists(folder_save):
@@ -47,7 +47,7 @@ def fitness_function(param):
     data = DataSets(data_path,
                     usecols=[1],
                     column_names=['cpu'],
-                    header=None,
+                    header=0,
                     n_in=n_in,
                     n_out=n_out,
                     is_diff=True,
@@ -167,7 +167,7 @@ def run(model, config_init, config_train, dataset: DataSets, filename, plot_pred
     y_test = np.reshape(y_test, (-1, y_test.shape[-1]))
     actual_invert = dataset.invert_transform(y_test)
 
-    result_eval = evaluate(actual_invert, pred_mean, ["mae", 'smape', 'jsd'])
+    result_eval = evaluate(actual_invert.reshape(pred_mean.shape), pred_mean, ["mae", 'smape', 'jsd'])
 
     if filename is not None:
         df = pd.DataFrame(np.concatenate([actual_invert, preds_invert], axis=1),
