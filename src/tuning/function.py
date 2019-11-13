@@ -31,11 +31,11 @@ template_param = [1, 2, 0.3, 2, 0.1, 1, 1000]
 
 
 def fitness_function(param):
-    tuning_model = "bayes"
+    tuning_model = "pso"
     model_name = "GruGan"
-    loss_type = "loss_gan_re_d"
-    data_set = "wc98"
-    sub_data_set = "wc98_workload_5min"
+    loss_type = "loss_gan"
+    data_set = "gg_trace"
+    sub_data_set = "5"
     data_path = f"data/{data_set}/{sub_data_set}.csv"
     folder_save = f"result/tuning/{tuning_model}/{model_name}/{loss_type}/{data_set}/{sub_data_set}/"
     if not os.path.exists(folder_save):
@@ -45,9 +45,9 @@ def fitness_function(param):
     n_out = 1
 
     data = DataSets(data_path,
-                    usecols=[1],
+                    usecols=[3],
                     column_names=['cpu'],
-                    header=0,
+                    header=None,
                     n_in=n_in,
                     n_out=n_out,
                     is_diff=True,
@@ -134,6 +134,7 @@ def fitness_function(param):
         else:
             for k1, v1 in v.items():
                 filename += "{}-{}_".format(k1[:2], v1)
+    filename += f"bs-{batch_size}"
 
     res = run(model_name, config_init, config_train, data, filename)
     del data

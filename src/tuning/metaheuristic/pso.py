@@ -85,7 +85,7 @@ class PSO:
             type_attr.append(attr['type'])
             if attr['type'] == 'discrete':
                 min_val.append(0)
-                max_val.append(len(attr['domain'])-1)
+                max_val.append(len(attr['domain']) - 1)
             elif attr['type'] == 'continuous':
                 min_val.append(attr['domain'][0])
                 max_val.append(attr['domain'][1])
@@ -145,47 +145,8 @@ class PSO:
         print(self.decode_position(self.pos_best_g))
 
 
-if __name__ == '__main__':
+from tuning.config import domain
+from tuning.function import fitness_function
 
-    def fitness(x):
-        total = 0
-        for i in range(len(x)):
-            total += x[i] ** 2
-
-        return total
-
-
-    # domain = [
-    #     {'name': 'x1', 'type': 'continuous', 'domain': (-100, 100)},
-    #     {'name': 'x2', 'type': 'continuous', 'domain': (-100, 100)},
-    #     {'name': 'x3', 'type': 'continuous', 'domain': (-100, 100)},
-    #     {'name': 'x4', 'type': 'continuous', 'domain': (-100, 100)},
-    #     {'name': 'x5', 'type': 'continuous', 'domain': (-100, 100)},
-    #     {'name': 'x6', 'type': 'continuous', 'domain': (-100, 100)},
-    #     {'name': 'x7', 'type': 'continuous', 'domain': (-100, 100)},
-    #     {'name': 'x8', 'type': 'continuous', 'domain': (-100, 100)},
-    #
-    # ]
-
-    from tuning.config import domain
-
-    from tuning.function import fitness_function
-
-    a = PSO(fitness_function, domain, num_particles=20)
-    a.run(100)
-
-    # from tuning.metaheuristic.function_utils import *
-    # a = PSO(fitness, domain, 10)
-    # a.run(300)
-
-    # def test(input_x):
-    #     return C30(input_x[0])
-
-    # from GPyOpt.methods import BayesianOptimization
-    #
-    # bayes = BayesianOptimization(test, domain, initial_design_numdata=100, num_cores=-1)
-    # bayes.run_optimization(10, verbosity=False)
-    # bayes.plot_convergence()
-    # bayes.plot_acquisition()
-    # print(bayes.x_opt)
-    # print(bayes.Y_best[-1])
+a = PSO(fitness_function, domain, num_particles=20)
+a.run(10)

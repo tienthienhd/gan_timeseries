@@ -11,17 +11,17 @@ import glob
 
 
 def run_tuning():
-    import src.tuning.bayes_tuning
-    # import src.tuning.metaheuristic.pso_lib
+    # import src.tuning.bayes_tuning
+    import src.tuning.metaheuristic.pso
 
 
-def process_result():
+def process_result(tuning_model="pso"):
     result = []
-    for file in glob.glob("result/tuning/bayes/*/*/*/*/*.csv"):
+    for file in glob.glob(f"result/tuning/{tuning_model}/*/*/*/*/*.csv"):
         res = get_info(file)
         result.append(res)
     df = pd.DataFrame(result)
-    df.to_csv("result/tuning/bayes/result_tuning.csv", index=False)
+    df.to_csv(f"result/tuning/{tuning_model}/result_tuning.csv", index=False)
 
 
 def get_info(file_path):
@@ -205,4 +205,5 @@ def test():
 
 
 if __name__ == '__main__':
-    test()
+    # process_result(tuning_model='pso')
+    run_tuning()
