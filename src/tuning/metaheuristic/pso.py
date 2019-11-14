@@ -149,4 +149,4 @@ from tuning.config import domain
 from tuning.function import fitness_function
 
 a = PSO(fitness_function, domain, num_particles=20)
-a.run(10)
+a.run(6)

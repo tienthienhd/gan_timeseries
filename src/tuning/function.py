@@ -33,9 +33,9 @@ template_param = [1, 2, 0.3, 2, 0.1, 1, 1000]
 def fitness_function(param):
     tuning_model = "pso"
     model_name = "GruGan"
-    loss_type = "loss_gan"
+    loss_type = "loss_gan_re_d"
     data_set = "gg_trace"
-    sub_data_set = "5"
+    sub_data_set = "5_full"
     data_path = f"data/{data_set}/{sub_data_set}.csv"
     folder_save = f"result/tuning/{tuning_model}/{model_name}/{loss_type}/{data_set}/{sub_data_set}/"
     if not os.path.exists(folder_save):
@@ -45,7 +45,7 @@ def fitness_function(param):
     n_out = 1
 
     data = DataSets(data_path,
-                    usecols=[3],
+                    usecols=[1],
                     column_names=['cpu'],
                     header=None,
                     n_in=n_in,
@@ -216,7 +216,7 @@ def plot_distribution(actual, predict, title=None, path=None):
     if title is not None:
         plt.title(title)
     if path is not None:
-        plt.savefig(path, dpi=300, format='svg')
+        plt.savefig(path + ".svg", dpi=300, format='svg')
     else:
         plt.show()
     plt.clf()
